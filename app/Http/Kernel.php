@@ -66,6 +66,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'two.fa.token' => \App\Http\Middleware\Api\TwoFATokenMiddleware::class,
         'jwtauth.access.token' => \App\Http\Middleware\Api\JwtAuthTokenMiddleware::class,
-        // 'cors' => \App\Http\Middleware\CorsMiddleware::class,
+        'auth.cms' => \App\Http\Middleware\AuthMiddleware::class,
     ];
 }

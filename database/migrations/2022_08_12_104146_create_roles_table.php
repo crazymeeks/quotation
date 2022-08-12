@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             createUUIdField($table);
             $table->string('name', 30);
+            $table->string('system_name', 30);
             $table->timestamps();
         });
     }

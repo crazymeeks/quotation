@@ -1,5 +1,19 @@
 <?php
 
+if (!function_exists('createUUIDAttribute')) {
+
+    /**
+     * Create uuid attribute
+     *
+     * @return array<string, string>
+     */
+    function createUUIDAttribute() {
+        return [
+            'uuid' => \Ramsey\Uuid\Uuid::uuid4(),
+        ];
+    }
+}
+
 if (!function_exists('is_testing')) {
 
     /**
