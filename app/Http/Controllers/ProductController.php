@@ -69,4 +69,14 @@ class ProductController extends Controller
 
         return redirect()->back()->with('message', 'Product successfully deleted!');
     }
+
+    /**
+     * Show add new page
+     *
+     * @return \Illuminate\View\View
+     */
+    public function showAddNewPage()
+    {
+        return view('admin.pages.products.form');
+    }
 }

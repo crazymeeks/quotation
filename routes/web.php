@@ -23,7 +23,8 @@ Route::group(['prefix' => 'home'], function($route){
     $route->get('/', [HomeController::class, 'getIndex'])->name('home');
 });
 
-Route::group(['prefix' => 'products', 'middleware' => 'auth.cms'], function($route){
+Route::group(['prefix' => 'product', 'middleware' => 'auth.cms'], function($route){
     $route->post('/', [ProductController::class, 'postSave'])->name('product.save');
+    $route->get('/add-new', [ProductController::class, 'showAddNewPage'])->name('product.add.new');
     $route->post('/delete', [ProductController::class, 'postDelete'])->name('product.delete');
 });
