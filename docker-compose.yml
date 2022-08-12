@@ -1,0 +1,40 @@
+version: "3.2"
+
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: quotation-db
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./database/data:/var/lib/mysql
+    networks:
+      default:
+        ipv4_address: ${DB_HOST}
+    tty: true
+    stdin_open: true
+
+  quotation.local:
+    image: quotation:latest
+    container_name: quotation.local-172.28.0.50
+    volumes:
+       - ./:/var/www/web
+       - ./nginx/conf.d:/etc/nginx/conf.d
+       - ./nginx/cert:/etc/ssl/self-signed
+    networks:
+      default:
+        ipv4_address: 172.28.0.50
+    tty: true
+    stdin_open: true
+    depends_on:
+      - mysql
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    dns:
+      - 8.8.8.8
+networks:
+  default:
+      name: devnetwork
+      external: true
