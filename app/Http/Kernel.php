@@ -67,5 +67,6 @@ class Kernel extends HttpKernel
         'two.fa.token' => \App\Http\Middleware\Api\TwoFATokenMiddleware::class,
         'jwtauth.access.token' => \App\Http\Middleware\Api\JwtAuthTokenMiddleware::class,
         'auth.cms' => \App\Http\Middleware\AuthMiddleware::class,
+        'action.ability' => \App\Http\Middleware\ActionAbilityMiddleware::class,
     ];
 }

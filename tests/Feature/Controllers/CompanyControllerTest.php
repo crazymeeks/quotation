@@ -13,11 +13,7 @@ class CompanyControllerTest extends TestCase
     {
         parent::setUp();
 
-        $user = User::factory()->create([
-            'role_id' => $this->adminRole
-        ]);
-
-        session()->put('admin_auth', $user);
+        $this->authenticateAsAdmin();
 
     }
 
@@ -25,6 +21,7 @@ class CompanyControllerTest extends TestCase
     public function testAdminCreateCompany(array $data)
     {
         $response = $this->json('POST', route('admin.company.post.save'), $data);
+        
         $this->assertEquals('Company successfully saved!', $response->original['message']);
         $this->assertDatabaseHas('companies', [
             'name' => $data['name']

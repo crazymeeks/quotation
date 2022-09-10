@@ -5,14 +5,18 @@ namespace Tests\Feature\Controllers;
 
 use Tests\TestCase;
 
+use App\Models\Company;
 use App\Models\Product;
+use App\Models\UnitOfMeasure;
 
 class ProductControllerTest extends TestCase
 {
     public function setUp(): void
     {
         parent::setUp();
-        $this->loginUser();
+        $this->authenticateAsUserIn();
+        Company::factory()->create();
+        UnitOfMeasure::factory()->create();
     }
 
     /**
@@ -21,9 +25,8 @@ class ProductControllerTest extends TestCase
     public function testShouldAddProduct(array $data)
     {
         $response = $this->json('POST', route('product.save'), $data);
-
+        
         $this->assertDatabaseHas('products', [
-            'area' => $data['area'],
             'name' => $data['name']
         ]);
         
@@ -55,7 +58,7 @@ class ProductControllerTest extends TestCase
     {
         $this->json('POST', route('product.save'), $data);
 
-        $this->json('POST', route('product.delete'), ['id' => 1]);
+        $this->json('DELETE', route('product.delete'), ['id' => 1]);
 
         $product = Product::first();
 
@@ -66,14 +69,16 @@ class ProductControllerTest extends TestCase
     public function data()
     {
         $data = [
-            'area' => '2cm',
-            'name' => 'wooden chair',
-            'image' => 'woodenchair.jpg',
-            'short_description' => 'wooden chair',
-            'description' => 'wooden chair',
-            'price' => 3550.90,
-            'percent_discount' => 0,
+            'unit_of_measure' => 1,
+            'company' => 1,
+            'name' => 'Product A',
+            'manufacturer_part_number' => null,
+            'purchase_description' => 'Purchase Description A',
+            'sales_description' => 'Sales Description A',
+            'cost' => 16000,
             'inventory' => 100,
+            'percent_discount' => 0.00,
+            'status' => Product::ACTIVE,
         ];
 
         return [

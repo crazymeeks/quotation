@@ -9,7 +9,7 @@ if (!function_exists('createUUIDAttribute')) {
      */
     function createUUIDAttribute() {
         return [
-            'uuid' => \Ramsey\Uuid\Uuid::uuid4(),
+            'uuid' => generateUuid(),
         ];
     }
 }

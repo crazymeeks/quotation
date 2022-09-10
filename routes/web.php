@@ -25,7 +25,7 @@ Route::group(['prefix' => 'home'], function($route){
     $route->get('/', [HomeController::class, 'getIndex'])->name('home');
 });
 
-Route::group(['middleware' => 'auth.cms'], function($route){
+Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
 
     /** Product */
     $route->group(['prefix' => 'product'], function($route){

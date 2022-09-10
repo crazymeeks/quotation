@@ -4,8 +4,8 @@ namespace Tests;
 
 use App\Models\User;
 use App\Models\Role;
-use App\Http\Middleware\VerifyCsrfToken;
 use App\Models\Permission;
+use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
@@ -59,25 +59,30 @@ abstract class TestCase extends BaseTestCase
             'title' => 'User Out'
         ]);
 
-        
     }
 
-    protected function loginUser()
+    protected function authenticateAsAdmin()
     {
-        $role = Role::factory()->create();
         User::factory()->create([
-            'role_id' => $role->id,
+            'role_id' => $this->adminRole->id
         ]);
 
-
-        $cred = [
-            'username' => 'admin',
-            'password' => 'password'
-        ];
-        $response = $this->json('POST', route('admin.post.login'), $cred);
+        $user = User::with(['role'])->first();
         
-        return $response;
+        session()->put('auth', $user);
     }
+
+    protected function authenticateAsUserIn()
+    {
+        User::factory()->create([
+            'role_id' => $this->userInRole->id
+        ]);
+
+        $user = User::with(['role'])->first();
+        
+        session()->put('auth', $user);
+    }
+
 
 
     public function tearDown(): void

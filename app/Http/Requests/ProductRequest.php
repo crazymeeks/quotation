@@ -24,9 +24,9 @@ class ProductRequest extends FormRequest
     public function rules()
     {
         return [
-            'area' => 'required',
             'name' => 'required|unique:products,name,' . $this->id,
-            'price' => 'required|numeric',
+            'cost' => 'required|numeric',
+            'inventory' => 'required|numeric',
             'percent_discount' => 'numeric',
         ];
     }
