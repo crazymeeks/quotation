@@ -11,12 +11,22 @@ class Order extends Model
 {
     use HasFactory;
 
+    const TYPE_ORDER = 'order';
+    const TYPE_QUOTATION = 'quotation';
+
+    const PENDING = '0';
+    const DELIVERED = '1';
+    const RETURNED = '3';
+
     protected $fillable = [
         'customer_id',
         'user_id',
+        'uuid',
         'reference_no',
         'grand_total',
-
+        'percent_discount',
+        'type',
+        'status',
     ];
 
 

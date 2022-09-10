@@ -24,7 +24,6 @@ class User extends Authenticatable
         'uuid',
         'firstname',
         'lastname',
-        'photo',
         'username',
         'password',
         'require_password_change',

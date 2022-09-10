@@ -18,11 +18,12 @@ return new class extends Migration
             createBigInteger($table, 'order_id');
             createUUIdField($table);
             $table->string('product_uuid', 60);
-            $table->string('area', 100);
+            $table->string('company', 200);
             $table->string('product_name', 200);
-            createNullable($table, 'image', 300);
-            createNullable($table, 'short_description', 300);
-            $table->longText('description')->default(NULL)->nullable();
+            $table->string('unit_of_measure', 30);
+            createNullable($table, 'manufacturer_part_number', 100);
+            createNullable($table, 'purchase_description', 300);
+            createNullable($table, 'sales_description', 300);
             $table->decimal('price', 12, 2);
             $table->bigInteger('percent_discount')->default(0)->unsigned();
             $table->decimal('final_price', 12, 2);

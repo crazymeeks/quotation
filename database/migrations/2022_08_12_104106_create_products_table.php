@@ -15,16 +15,20 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
+            createBigInteger($table, 'unit_of_measure_id', true);
+            createBigInteger($table, 'company_id', true);
             createUUIdField($table);
-            $table->string('area', 100);
             $table->string('name', 200);
-            createNullable($table, 'image', 300);
-            createNullable($table, 'short_description', 300);
-            $table->longText('description')->default(NULL)->nullable();
-            $table->decimal('price', 12,2);
-            $table->bigInteger('percent_discount')->unsigned()->default(0);
+            $table->string('manufacturer_part_number', 100);
+            createNullable($table, 'purchase_description', 300);
+            createNullable($table, 'sales_description', 300);
+            $table->decimal('cost', 12,2);
+            $table->bigInteger('inventory')->unsigned()->default(0);
+            $table->decimal('percent_discount', 3,2)->default(0.00);
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->softDeletes();
             $table->timestamps();
+
         });
     }
 

@@ -48,10 +48,15 @@ if (!function_exists('createBigInteger')) {
      *
      * @param \Illuminate\Database\Schema\Blueprint $table
      * @param string $fieldName
+     * @param bool $nullable
      * 
      * @return void
      */
-    function createBigInteger(\Illuminate\Database\Schema\Blueprint $table, string $fieldName) {
+    function createBigInteger(\Illuminate\Database\Schema\Blueprint $table, string $fieldName, bool $nullable = false) {
+        if ($nullable) {
+            $table->bigInteger($fieldName)->default(NULL)->nullable();
+            return;
+        }
         $table->bigInteger($fieldName)->unsigned();
     }
 }
@@ -90,5 +95,43 @@ if (!function_exists('createForeignKey')) {
               ->on($on)
               ->onDelete('cascade')
               ->onUpdate('cascade');
+    }
+}
+
+
+if (!function_exists('generateUuid')) {
+
+    /**
+     * Generate UUID
+     *
+     * @return string
+     */
+    function generateUuid() {
+        $uuid = \Ramsey\Uuid\Uuid::uuid4()->__toString();
+        return $uuid;
+    }
+}
+
+
+if (!function_exists('generate_string')) {
+
+    /**
+     * Generate random string
+     *
+     * @param integer $strength
+     * 
+     * @return string
+     */
+    function generate_string($strength = 16) {
+        $permitted_chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' . uniqid();
+
+        $input_length = strlen($permitted_chars);
+        $random_string = '';
+        for($i = 0; $i < $strength; $i++) {
+            $random_character = $permitted_chars[mt_rand(0, $input_length - 1)];
+            $random_string .= $random_character;
+        }
+    
+        return $random_string;
     }
 }

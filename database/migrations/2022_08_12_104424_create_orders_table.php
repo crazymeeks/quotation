@@ -20,6 +20,9 @@ return new class extends Migration
             createUUIdField($table);
             $table->string('reference_no', 20);
             $table->decimal('grand_total', 12, 2);
+            $table->decimal('percent_discount', 3, 2)->default(0.00);
+            $table->enum('type', ['order', 'quotation'])->default('quotation');
+            $table->enum('status', ['0', '1', '2'])->default('1')->comment('0-pending 1-delivered 3-returned');
             $table->timestamps();
 
             createForeignKey($table, 'customer_id', 'id', 'customers');

@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('lastname', 60);
             $table->string('username', 30);
             $table->string('password', 60);
-            $table->string('photo', 160)->default(NULL)->nullable();
             $table->enum('require_password_change', ['0', '1'])->default('0')->comment('0-not required 1-required');
             $table->timestamp('deactivated_at')->default(NULL)->nullable();
             $table->softDeletes();

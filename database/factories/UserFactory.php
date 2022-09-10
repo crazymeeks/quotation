@@ -19,11 +19,15 @@ class UserFactory extends Factory
     public function definition()
     {
         return [
-            'username' => 'admin',
-            'uuid' => Uuid::uuid4(),
+            'role_id' => 1,
+            'uuid' => generateUuid(),
             'firstname' => fake()->name(),
             'lastname' => fake()->name(),
+            'username' => 'admin',
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+            'require_password_change' => '0',
+            'deleted_at' => null,
+            'deactivated_at' => null,
         ];
     }
 

@@ -73,6 +73,7 @@ class ProductControllerTest extends TestCase
             'description' => 'wooden chair',
             'price' => 3550.90,
             'percent_discount' => 0,
+            'inventory' => 100,
         ];
 
         return [

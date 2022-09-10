@@ -13,14 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('roles', function (Blueprint $table) {
+        Schema::create('companies', function (Blueprint $table) {
             $table->id();
-            createBigInteger($table, 'permission_id');
             createUUIdField($table);
-            $table->string('title', 30);
+            $table->string('name', 300);
+            $table->string('address', 400)->default(null)->nullable();
+            $table->softDeletes();
             $table->timestamps();
-            
-            createForeignKey($table, 'permission_id', 'id', 'permissions');
         });
     }
 
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('companies');
     }
 };

@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Role>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Customer>
  */
-class RoleFactory extends Factory
+class CustomerFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,9 +17,10 @@ class RoleFactory extends Factory
     public function definition()
     {
         return [
-            'permission_id' => 1,
             'uuid' => generateUuid(),
-            'title' => 'Admin',
+            'customer_name' => 'Customer A',
+            'contact_no' => '09898739838',
+            'address' => 'Customer address A',
         ];
     }
 }

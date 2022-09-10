@@ -13,14 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('roles', function (Blueprint $table) {
+        Schema::create('unit_of_measures', function (Blueprint $table) {
             $table->id();
-            createBigInteger($table, 'permission_id');
             createUUIdField($table);
             $table->string('title', 30);
+            $table->softDeletes();
             $table->timestamps();
-            
-            createForeignKey($table, 'permission_id', 'id', 'permissions');
         });
     }
 
@@ -31,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('unit_of_measures');
     }
 };

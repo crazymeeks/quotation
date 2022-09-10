@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\UnitOfMeasureController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,8 +25,24 @@ Route::group(['prefix' => 'home'], function($route){
     $route->get('/', [HomeController::class, 'getIndex'])->name('home');
 });
 
-Route::group(['prefix' => 'product', 'middleware' => 'auth.cms'], function($route){
-    $route->post('/', [ProductController::class, 'postSave'])->name('product.save');
-    $route->get('/add-new', [ProductController::class, 'showAddNewPage'])->name('product.add.new');
-    $route->post('/delete', [ProductController::class, 'postDelete'])->name('product.delete');
+Route::group(['middleware' => 'auth.cms'], function($route){
+
+    /** Product */
+    $route->group(['prefix' => 'product'], function($route){
+        $route->post('/', [ProductController::class, 'postSave'])->name('product.save');
+        $route->get('/add-new', [ProductController::class, 'showAddNewPage'])->name('product.add.new');
+        $route->post('/delete', [ProductController::class, 'postDelete'])->name('product.delete');
+    });
+
+    /** Company */
+    $route->group(['prefix' => 'company'], function($route){
+        $route->post('/', [CompanyController::class, 'postSave'])->name('admin.company.post.save');
+        $route->delete('/', [CompanyController::class, 'deleteCompany'])->name('admin.company.delete');
+    });
+
+    /** Unit of measure */
+    $route->group(['prefix' => 'unit-of-measure'], function($route){
+        $route->post('/', [UnitOfMeasureController::class, 'postSave'])->name('admin.uom.post.save');
+        $route->delete('/', [UnitOfMeasureController::class, 'deleteUom'])->name('admin.uom.delete');
+    });
 });
