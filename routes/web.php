@@ -31,7 +31,7 @@ Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
     $route->group(['prefix' => 'product'], function($route){
         $route->post('/', [ProductController::class, 'postSave'])->name('product.save');
         $route->get('/add-new', [ProductController::class, 'showAddNewPage'])->name('product.add.new');
-        $route->post('/delete', [ProductController::class, 'postDelete'])->name('product.delete');
+        $route->delete('/delete', [ProductController::class, 'postDelete'])->name('product.delete');
     });
 
     /** Company */

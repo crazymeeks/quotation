@@ -14,7 +14,7 @@ class ProductControllerTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->authenticateAsUserIn();
+        
         Company::factory()->create();
         UnitOfMeasure::factory()->create();
     }
@@ -24,6 +24,7 @@ class ProductControllerTest extends TestCase
      */
     public function testShouldAddProduct(array $data)
     {
+        $this->authenticateAsUserIn();
         $response = $this->json('POST', route('product.save'), $data);
         
         $this->assertDatabaseHas('products', [
@@ -38,7 +39,7 @@ class ProductControllerTest extends TestCase
      */
     public function testUpdateProduct(array $data)
     {
-
+        $this->authenticateAsUserIn();
         $this->json('POST', route('product.save'), $data);
         $data['id'] = 1;
         $data['name'] = 'table';
@@ -56,12 +57,13 @@ class ProductControllerTest extends TestCase
      */
     public function testShouldDeleteProduct(array $data)
     {
+        $this->authenticateAsAdmin();
         $this->json('POST', route('product.save'), $data);
 
-        $this->json('DELETE', route('product.delete'), ['id' => 1]);
-
+        $response = $this->json('DELETE', route('product.delete'), ['id' => 1]);
+        
         $product = Product::first();
-
+        
         $this->assertNull($product);
         
     }

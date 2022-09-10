@@ -60,7 +60,7 @@ class ProductController extends Controller
      */
     public function postDelete(Request $request)
     {
-
+        
         $request->validate([
             'id' => 'required|numeric'
         ]);
