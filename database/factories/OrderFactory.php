@@ -24,7 +24,6 @@ class OrderFactory extends Factory
             'reference_no' => generate_string(),
             'grand_total' => 100,
             'percent_discount' => 0.00,
-            'type' => Order::TYPE_QUOTATION,
             'status' => Order::PENDING,
         ];
     }

@@ -5,11 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-use App\Models\OrderProduct;
-
-class Order extends Model
+class Quotation extends Model
 {
     use HasFactory;
+
 
     const PENDING = '0';
     const DELIVERED = '1';
@@ -19,20 +18,8 @@ class Order extends Model
         'customer_id',
         'user_id',
         'uuid',
-        'reference_no',
-        'grand_total',
+        'code',
         'percent_discount',
         'status',
     ];
-
-
-    /**
-     * Get orders of this model
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function orderProducts()
-    {
-        return $this->hasMany(OrderProduct::class);
-    }
 }

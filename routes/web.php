@@ -3,9 +3,11 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\UnitOfMeasureController;
 
 /*
@@ -44,5 +46,15 @@ Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
     $route->group(['prefix' => 'unit-of-measure'], function($route){
         $route->post('/', [UnitOfMeasureController::class, 'postSave'])->name('admin.uom.post.save');
         $route->delete('/', [UnitOfMeasureController::class, 'deleteUom'])->name('admin.uom.delete');
+    });
+
+    /** Role */
+    $route->group(['prefix' => 'role'], function($route){
+        $route->post('/', [RoleController::class, 'postSave'])->name('admin.role.post.save');
+    });
+
+    /** Quotation */
+    $route->group(['prefix' => 'quotation'], function($route){
+        $route->post('/', [QuotationController::class, 'postSave'])->name('admin.quotation.post.save');
     });
 });

@@ -135,3 +135,32 @@ if (!function_exists('generate_string')) {
         return $random_string;
     }
 }
+
+
+if (!function_exists('createRefenceNumber')) {
+
+    /**
+     * Create reference number
+     *
+     * @return string
+     */
+    function createRefenceNumber(string $prefix = 'REF-') {
+        return strtoupper(uniqid($prefix));
+    }
+}
+
+if (!function_exists('get_discount_price')) {
+
+    /**
+     * Get discounted price
+     *
+     * @param int|float $actual_price
+     * @param int|float $discount
+     * 
+     * @return mixed
+     */
+    function get_discount_price($actual_price, $discount) {
+        $sellingPrice = $actual_price - ($actual_price * ($discount / 100));
+        return $sellingPrice;
+    }
+}

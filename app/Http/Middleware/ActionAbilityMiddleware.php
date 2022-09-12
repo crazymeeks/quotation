@@ -23,6 +23,9 @@ class ActionAbilityMiddleware
         $allowedMethods = $this->getAllowedAction($loggedInUser->role->permission->title);
         $requestMethod = strtolower($request->method());
         if (in_array($requestMethod, $allowedMethods)) {
+            $request->merge([
+                'user' => $loggedInUser
+            ]);
             return $next($request);
         }
 

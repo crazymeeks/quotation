@@ -65,8 +65,11 @@ class ProductController extends Controller
             'id' => 'required|numeric'
         ]);
 
-        Product::whereId($request->id)->delete();
-
+        $product = Product::find($request->id);
+        $product->deleted_at = now()->__toString();
+        $product->name = sprintf("%s.%s", $product->name, uniqid());
+        $product->save();
+        
         return redirect()->back()->with('message', 'Product successfully deleted!');
     }
 

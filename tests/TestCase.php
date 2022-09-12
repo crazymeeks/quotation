@@ -84,6 +84,16 @@ abstract class TestCase extends BaseTestCase
     }
 
 
+    protected function authenticateAsUserOut()
+    {
+        User::factory()->create([
+            'role_id' => $this->userOutRole->id
+        ]);
+
+        $user = User::with(['role'])->first();
+        
+        session()->put('auth', $user);
+    }
 
     public function tearDown(): void
     {
