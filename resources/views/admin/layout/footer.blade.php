@@ -10,10 +10,17 @@
         <script src="/assets/js/waves.js"></script>
         <script src="/assets/js/jquery.nicescroll.js"></script>
         <script src="/assets/js/jquery.scrollTo.min.js"></script>
+        <script src="/assets/js/sweetalert2.min.js"></script>
 
         <script src="/assets/plugins/chart.js/chart.min.js"></script>
         <script src="/assets/pages/dashboard.js"></script>
-
+        <script>
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+        </script>
         @yield('js')
 
         <!-- App js -->

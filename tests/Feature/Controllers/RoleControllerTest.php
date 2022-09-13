@@ -39,6 +39,17 @@ class RoleControllerTest extends TestCase
         ]);
     }
 
+    public function testShouldDeleteRole()
+    {
+        $data = [
+            'id' => $this->userInRole->id,
+        ];
+        
+        $response = $this->json('DELETE', route('admin.role.delete'), $data);
+
+        $this->assertEquals('Role has been deleted.', $response->original['message']);
+    }
+
     public function data()
     {
         $data = [

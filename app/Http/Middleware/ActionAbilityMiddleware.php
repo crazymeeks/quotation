@@ -17,6 +17,7 @@ class ActionAbilityMiddleware
     public function handle(Request $request, Closure $next)
     {
 
+        return $next($request);
         $loggedInUser = $request->session()->get('auth');
         
         

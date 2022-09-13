@@ -50,7 +50,11 @@ Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
 
     /** Role */
     $route->group(['prefix' => 'role'], function($route){
+        $route->get('/', [RoleController::class, 'getIndex'])->name('admin.role.get.index');
         $route->post('/', [RoleController::class, 'postSave'])->name('admin.role.post.save');
+        $route->get('/edit/{uuid}', [RoleController::class, 'editForm'])->name('admin.role.edit');
+        $route->get('/new', [RoleController::class, 'displayNewForm'])->name('admin.role.get.new');
+        $route->delete('/', [RoleController::class, 'deleteRole'])->name('admin.role.delete');
     });
 
     /** Quotation */

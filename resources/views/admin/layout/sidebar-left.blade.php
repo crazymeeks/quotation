@@ -42,7 +42,7 @@
                             </li>
 
                             <li>
-                                <a href="javascript:void(0);" class="waves-effect"><i class="fas fa-gavel"></i> <span> Roles </span></a>
+                                <a href="{{route('admin.role.get.index')}}" class="waves-effect"><i class="fas fa-gavel"></i> <span> Roles </span></a>
                             </li>
 
                             <li>

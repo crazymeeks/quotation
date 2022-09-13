@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
+use App\Models\Role;
+use App\Models\Permission;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -14,11 +17,44 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        $adminPerm = Permission::factory()->create([
+            'uuid' => generateUuid(),
+            'title' => 'Admin'
+        ]);
+
+        $readPerm = Permission::factory()->create([
+            'uuid' => generateUuid(),
+            'title' => 'Read'
+        ]);
+        $writePerm = Permission::factory()->create([
+            'uuid' => generateUuid(),
+            'title' => 'Write'
+        ]);
+
+        $adminRole = Role::factory()->create([
+            'permission_id' => $adminPerm->id,
+        ]);
+        $userInRole = Role::factory()->create([
+            'permission_id' => $writePerm->id,
+            'title' => 'UserIn'
+        ]);
+        $userOutRole = Role::factory()->create([
+            'permission_id' => $readPerm->id,
+            'title' => 'UserOut'
+        ]);
+
+        User::factory()->create([
+            'role_id' => $adminRole->id,
+            'uuid' => generateUuid(),
+            'firstname' => 'Richarch',
+            'lastname' => 'Hendricks',
+            'username' => 'rhendricks',
+            'password' => bcrypt('password'),
+            'deleted_at' => null,
+            'deactivated_at' => null,
+        ]);
+        
+
     }
 }
