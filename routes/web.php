@@ -30,14 +30,15 @@ Route::group(['prefix' => 'home'], function($route){
 Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
 
     /** Product */
-    $route->group(['prefix' => 'product'], function($route){
+    $route->group(['prefix' => 'products'], function($route){
+        $route->get('/', [ProductController::class, 'index'])->name('product.index');
         $route->post('/', [ProductController::class, 'postSave'])->name('product.save');
         $route->get('/add-new', [ProductController::class, 'showAddNewPage'])->name('product.add.new');
         $route->delete('/delete', [ProductController::class, 'postDelete'])->name('product.delete');
     });
 
     /** Company */
-    $route->group(['prefix' => 'company'], function($route){
+    $route->group(['prefix' => 'companies'], function($route){
         $route->post('/', [CompanyController::class, 'postSave'])->name('admin.company.post.save');
         $route->delete('/', [CompanyController::class, 'deleteCompany'])->name('admin.company.delete');
     });
@@ -49,7 +50,7 @@ Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
     });
 
     /** Role */
-    $route->group(['prefix' => 'role'], function($route){
+    $route->group(['prefix' => 'roles'], function($route){
         $route->get('/', [RoleController::class, 'getIndex'])->name('admin.role.get.index');
         $route->post('/', [RoleController::class, 'postSave'])->name('admin.role.post.save');
         $route->get('/edit/{uuid}', [RoleController::class, 'editForm'])->name('admin.role.edit');

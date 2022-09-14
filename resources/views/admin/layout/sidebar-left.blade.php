@@ -34,7 +34,7 @@
                             </li>
 
                             <li>
-                                <a href="javascript:void(0);" class="waves-effect"><i class="dripicons-stack"></i><span> Products</a>
+                                <a href="{{route('product.index')}}" class="waves-effect"><i class="dripicons-stack"></i><span> Products</a>
                             </li>
 
                             <li>

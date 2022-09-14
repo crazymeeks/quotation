@@ -4,13 +4,21 @@ namespace App\Http\Controllers;
 
 use Exception;
 use App\Models\Product;
+use App\Models\Company;
 use Illuminate\Http\Request;
+use App\Models\UnitOfMeasure;
 use Illuminate\Support\Facades\DB;
+use App\Repository\ProductRepository;
 use App\Http\Requests\ProductRequest;
 
 class ProductController extends Controller
 {
 
+
+    public function index(ProductRepository $productRepository)
+    {
+        return view('admin.pages.products.index');
+    }
 
     /**
      * Create/update product
@@ -80,6 +88,11 @@ class ProductController extends Controller
      */
     public function showAddNewPage()
     {
-        return view('admin.pages.products.form');
+        $units = UnitOfMeasure::all();
+        $companies = Company::all();
+        return view('admin.pages.products.form', [
+            'units' => $units,
+            'companies' => $companies
+        ]);
     }
 }
