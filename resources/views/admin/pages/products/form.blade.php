@@ -15,6 +15,9 @@
                     
                     <div class="col-xl-12">
                         <form id="myform">
+                            @if($product->id !== null)
+                            <input type="hidden" id="id" value="{{$product->id}}">
+                            @endif
                             <div class="form-group row">
                                 <label for="unit_of_measure" class="col-sm-2 col-form-label">Unit of measure</label>
                                 <div class="col-sm-10">
@@ -40,49 +43,56 @@
                             <div class="form-group row">
                                 <label for="name" class="col-sm-2 col-form-label">Product name</label>
                                 <div class="col-sm-10">
-                                    <input class="form-control" name="name" id="name" type="text" value="" placeholder="Product name here...">
+                                    <input class="form-control" name="name" id="name" type="text" value="{{$product->name}}" placeholder="Product name here...">
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label for="manufacturer_part_number" class="col-sm-2 col-form-label">Manufacturer's part number</label>
                                 <div class="col-sm-10">
-                                    <input class="form-control" id="manufacturer_part_number" type="text" value="" placeholder="Manufacture part number here...">
+                                    <input class="form-control" id="manufacturer_part_number" type="text" value="{{$product->manufacturer_part_number}}" placeholder="Manufacture part number here...">
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label for="purchase_description" class="col-sm-2 col-form-label">Purchase description</label>
                                 <div class="col-sm-10">
-                                    <textarea name="purchase_description" id="purchase_description" cols="102" rows="4"></textarea>
+                                    <textarea name="purchase_description" id="purchase_description" cols="102" rows="4">{{$product->purchase_description}}</textarea>
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label for="sales_description" class="col-sm-2 col-form-label">Sales description</label>
                                 <div class="col-sm-10">
-                                    <textarea name="sales_description" id="sales_description" cols="102" rows="4"></textarea>
+                                    <textarea name="sales_description" id="sales_description" cols="102" rows="4">{{$product->purchase_description}}</textarea>
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label for="cost" class="col-sm-2 col-form-label">Cost</label>
                                 <div class="col-sm-10">
-                                    <input class="form-control" name="cost" id="cost" type="number" value="" placeholder="Enter cost here...">
+                                    <input class="form-control" name="cost" id="cost" type="number" value="{{$product->cost}}" placeholder="Enter cost here...">
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label for="percent_discount" class="col-sm-2 col-form-label">Percent discount</label>
                                 <div class="col-sm-10">
-                                    <input class="form-control" name="percent_discount" id="percent_discount" type="number" value="" placeholder="Enter discount percentage here...">
+                                    <input class="form-control" name="percent_discount" id="percent_discount" type="number" value="{{$product->percent_discount}}" placeholder="Enter discount percentage here...">
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label for="inventory" class="col-sm-2 col-form-label">Stocks/Inventory</label>
                                 <div class="col-sm-10">
-                                    <input class="form-control" name="inventory" id="inventory" type="number" value="" placeholder="Enter stocks here...">
+                                    <input class="form-control" name="inventory" id="inventory" type="number" value="{{$product->inventory}}" placeholder="Enter stocks here...">
                                 </div>
                             </div>
                             
                             <div class="checkbox">
+                                
                                 <div class="custom-control custom-checkbox">
+                                    <?php
+                                    if($product->status === null || $product->status === 'active'):
+                                    ?>
                                     <input type="checkbox" checked class="custom-control-input status" id="customCheck2">
+                                    <?php else:?>
+                                        <input type="checkbox" class="custom-control-input status" id="customCheck2">
+                                    <?php endif;?>
                                     <label class="custom-control-label" for="customCheck2">Set as active</label>
                                 </div>
                             </div>
@@ -133,6 +143,10 @@
 
                 if ($('.status').is(':checked')) {
                     data.status = 'active';
+                }
+
+                if ($('#id').length > 0) {
+                    data.id = $('#id').val();
                 }
                 
                 $.ajax({

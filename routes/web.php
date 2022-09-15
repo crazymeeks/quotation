@@ -34,7 +34,10 @@ Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
         $route->get('/', [ProductController::class, 'index'])->name('product.index');
         $route->post('/', [ProductController::class, 'postSave'])->name('product.save');
         $route->get('/add-new', [ProductController::class, 'showAddNewPage'])->name('product.add.new');
-        $route->delete('/delete', [ProductController::class, 'postDelete'])->name('product.delete');
+        $route->get('/edit/{uuid}', [ProductController::class, 'editProductPage'])->name('product.edit');
+        $route->delete('/', [ProductController::class, 'postDelete'])->name('product.delete');
+
+        $route->get('/datatable', [ProductController::class, 'getDatatable'])->name('product.datatable');
     });
 
     /** Company */

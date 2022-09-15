@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ProductRepository
@@ -31,5 +32,47 @@ class ProductRepository
                      ->leftJoin('companies', 'products.company_id', '=', 'companies.id');
 
         return $builder;
+    }
+
+     /**
+     * Data to datatable
+     * 
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return array
+     */
+    public function getDatatableData(Request $request)
+    {
+        $limit = $request->length;
+        $offset = $request->start;
+        $products = $this->getBaseTable()
+                       ->where(function($query) use ($request) {
+                            $search = $request->search['value'];
+                            if (!empty($search)) {
+                                return $query->where('products.name', 'like', '%' . $search . '%')
+                                      ->orWhere('products.cost', 'like', '%' . $search . '%')
+                                      ->orWhere('products.percent_discount', 'like', '%' . $search . '%')
+                                      ->orWhere('products.inventory', 'like', '%' . $search . '%')
+                                      ->orWhere('unit_of_measures.title', 'like', '%' . $search . '%')
+                                      ->orWhere('companies.name', 'like', '%' . $search . '%');
+                            }
+                       })
+                       ->whereNull('products.deleted_at')
+                       ->limit($limit)
+                       ->offset($offset)
+                       ->get();
+        
+        
+        $logs = $products->toArray();
+        
+        $totalRecords = count($logs);
+        $data = [
+            'draw' => $request->draw,
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords,
+            'data' => $logs,
+        ];
+
+        return $data;
     }
 }

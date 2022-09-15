@@ -21,6 +21,21 @@ class ProductController extends Controller
     }
 
     /**
+     * Get product data for datatable
+     * 
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getDatatable(Request $request, ProductRepository $productRepository)
+    {
+        $data = $productRepository->getDatatableData($request);
+
+        return $data;
+    }
+
+
+    /**
      * Create/update product
      *
      * @param \App\Http\Requests\ProductRequest $request
@@ -77,8 +92,7 @@ class ProductController extends Controller
         $product->deleted_at = now()->__toString();
         $product->name = sprintf("%s.%s", $product->name, uniqid());
         $product->save();
-        
-        return redirect()->back()->with('message', 'Product successfully deleted!');
+        return response()->json(['message' => 'Product successfully deleted!']);
     }
 
     /**
@@ -90,9 +104,31 @@ class ProductController extends Controller
     {
         $units = UnitOfMeasure::all();
         $companies = Company::all();
+        $product = new Product();
         return view('admin.pages.products.form', [
             'units' => $units,
-            'companies' => $companies
+            'companies' => $companies,
+            'product' => $product,
+        ]);
+    }
+
+    /**
+     * Display edit product page
+     *
+     * @param string $uuid
+     * 
+     * @return \Illuminate\View\View
+     */
+    public function editProductPage(string $uuid)
+    {
+
+        $units = UnitOfMeasure::all();
+        $companies = Company::all();
+        $product = Product::whereUuid($uuid)->first();
+        return view('admin.pages.products.form', [
+            'units' => $units,
+            'companies' => $companies,
+            'product' => $product,
         ]);
     }
 }

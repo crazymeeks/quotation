@@ -19,6 +19,41 @@ class ProductControllerTest extends TestCase
         UnitOfMeasure::factory()->create();
     }
 
+    /** @dataProvider dataTableRequest */
+    public function testShouldGetProductDatatable(array $dtRequest)
+    {
+        Product::factory()->create();
+        $response = $this->json('GET', route('product.datatable'), $dtRequest);
+        $response->assertJsonStructure([
+            'draw',
+            'recordsTotal',
+            'recordsFiltered',
+            'data' => [
+                [
+                    'id',
+                    'unit_of_measure_id',
+                    'company_id',
+                    'uuid',
+                    'name',
+                    'manufacturer_part_number',
+                    'purchase_description',
+                    'sales_description',
+                    'cost',
+                    'inventory',
+                    'percent_discount',
+                    'status',
+                    'deleted_at',
+                    'created_at',
+                    'updated_at',
+                    'measure',
+                    'company_name',
+                ]
+            ]
+        ]);
+    }
+
+
+
     /**
      * @dataProvider data
      */
@@ -60,12 +95,110 @@ class ProductControllerTest extends TestCase
         $this->authenticateAsAdmin();
         $this->json('POST', route('product.save'), $data);
 
-        $response = $this->json('DELETE', route('product.delete'), ['id' => 1]);
+        $this->json('DELETE', route('product.delete'), ['id' => 1]);
         
         $product = Product::first();
         
         $this->assertNull($product);
         
+    }
+
+    public function dataTableRequest()
+    {
+        $dt = [
+            'draw' => 1,
+            'columns' => [
+                [
+                    'data' => 'name',
+                    'name' => NULL,
+                    'searchable' => 'true',
+                    'orderable' => 'true',
+                    'search' => [
+                        'value' => NULL,
+                        'regex' => 'false'
+                    ]
+                ],
+                [
+                    'data' => 'cost',
+                    'name' => NULL,
+                    'searchable' => 'true',
+                    'orderable' => 'true',
+                    'search' => [
+                        'value' => NULL,
+                        'regex' => 'false'
+                    ]
+                ],
+                [
+                    'data' => 'inventory',
+                    'name' => NULL,
+                    'searchable' => 'true',
+                    'orderable' => 'true',
+                    'search' => [
+                        'value' => NULL,
+                        'regex' => 'false'
+                    ]
+                ],
+                [
+                    'data' => 'percent_discount',
+                    'name' => NULL,
+                    'searchable' => 'true',
+                    'orderable' => 'true',
+                    'search' => [
+                        'value' => NULL,
+                        'regex' => 'false'
+                    ]
+                ],
+                [
+                    'data' => 'measure',
+                    'name' => NULL,
+                    'searchable' => 'true',
+                    'orderable' => 'true',
+                    'search' => [
+                        'value' => NULL,
+                        'regex' => 'false'
+                    ]
+                ],
+                [
+                    'data' => 'company_name',
+                    'name' => NULL,
+                    'searchable' => 'true',
+                    'orderable' => 'true',
+                    'search' => [
+                        'value' => NULL,
+                        'regex' => 'false'
+                    ]
+                ],
+                
+                [
+                    'data' => 'status',
+                    'name' => NULL,
+                    'searchable' => 'true',
+                    'orderable' => 'true',
+                    'search' => [
+                        'value' => NULL,
+                        'regex' => 'false'
+                    ]
+                ],
+
+            ],
+            'order' => [
+                [
+                    'column' => '0',
+                    'dir' => 'desc'
+                ]
+            ],
+            'start' => '0',
+            'length' => '10',
+            'search' => [
+                'value' => '',
+                'regex' => 'false'
+            ],
+            '_' => '1600436890036',
+        ];
+
+        return [
+            array($dt)
+        ];
     }
 
     public function data()
