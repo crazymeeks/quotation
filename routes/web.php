@@ -7,6 +7,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\UnitOfMeasureController;
 
@@ -64,5 +65,15 @@ Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
     /** Quotation */
     $route->group(['prefix' => 'quotation'], function($route){
         $route->post('/', [QuotationController::class, 'postSave'])->name('admin.quotation.post.save');
+        $route->get('/new', [QuotationController::class, 'displayQuotationForm'])->name('admin.quotation.get.new');
+        
+        $route->group(['prefix' => 'product'], function($route){
+            $route->post('/', [QuotationController::class, 'postAddProduct'])->name('admin.quotation.product.add.post');
+        });
     });
+
+});
+/** Customer */
+Route::group(['prefix' => 'customers'], function($route){
+    $route->get('/typeahead', [CustomerController::class, 'typeAhead'])->name('customer.typeahead.get');
 });

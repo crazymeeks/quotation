@@ -105,6 +105,7 @@ class ProductController extends Controller
         $units = UnitOfMeasure::all();
         $companies = Company::all();
         $product = new Product();
+        $product->percent_discount = 0;
         return view('admin.pages.products.form', [
             'units' => $units,
             'companies' => $companies,

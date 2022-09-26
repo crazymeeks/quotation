@@ -25,7 +25,7 @@ return new class extends Migration
             $table->decimal('cost', 12,2);
             $table->bigInteger('inventory')->unsigned()->default(0);
             $table->decimal('percent_discount', 3,2)->default(0.00);
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->string('status', 15)->default('active');
             $table->softDeletes();
             $table->timestamps();
 

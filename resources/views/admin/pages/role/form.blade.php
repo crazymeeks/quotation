@@ -71,13 +71,10 @@
                     data: data,
                     success: function(response){
                         const {message} = response;
-
-                        Swal.fire({
-                            icon: 'success',
-                            title: message,
-                        }).then(() => {
+                        toastr.success(message);
+                        setTimeout(() => {
                             window.location.href = "{{route('admin.role.get.index')}}";
-                        });
+                        }, 2000);
                     }
                 });
             }

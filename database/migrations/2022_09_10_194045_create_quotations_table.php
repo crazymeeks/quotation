@@ -20,7 +20,7 @@ return new class extends Migration
             createUUIdField($table);
             $table->string('code', 30);
             $table->decimal('percent_discount', 3, 2)->default(0.00);
-            $table->enum('status', ['0', '1', '2'])->default('1')->comment('0-pending 1-delivered 3-returned');
+            $table->string('status', 15)->default('pending');
             $table->timestamps();
 
             createForeignKey($table, 'customer_id', 'id', 'customers');

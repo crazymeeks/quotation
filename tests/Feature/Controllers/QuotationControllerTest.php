@@ -64,6 +64,25 @@ class QuotationControllerTest extends TestCase
 
     }
 
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
+    public function testShouldAddProductQuotation()
+    {
+        $product = Product::factory()->create();
+
+        $request = [
+            'product' => $product->id,
+            'quantity' => 1
+        ];
+
+        $response = $this->json('POST', route('admin.quotation.product.add.post'), $request);
+
+        $this->assertArrayHasKey('html', $response);
+    }
+
     public function data()
     {
         $data = [

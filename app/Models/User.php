@@ -26,6 +26,7 @@ class User extends Authenticatable
         'lastname',
         'username',
         'password',
+        'status',
         'require_password_change',
         'deleted_at',
         'deactivated_at',

@@ -29,6 +29,16 @@ class Product extends Model
         'deleted_at',
     ];
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', self::ACTIVE);
+    }
 
     /**
      * Get company of this model

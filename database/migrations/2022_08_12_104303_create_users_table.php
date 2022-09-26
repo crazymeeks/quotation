@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('username', 30);
             $table->string('password', 60);
             $table->enum('require_password_change', ['0', '1'])->default('0')->comment('0-not required 1-required');
+            $table->string('status', 15)->default('active');
             $table->timestamp('deactivated_at')->default(NULL)->nullable();
             $table->softDeletes();
             $table->timestamps();

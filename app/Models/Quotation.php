@@ -10,9 +10,9 @@ class Quotation extends Model
     use HasFactory;
 
 
-    const PENDING = '0';
-    const DELIVERED = '1';
-    const RETURNED = '3';
+    const PENDING = 'pending';
+    const DELIVERED = 'delivered';
+    const RETURNED = 'returned';
 
     protected $fillable = [
         'customer_id',

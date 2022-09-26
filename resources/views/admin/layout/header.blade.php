@@ -15,5 +15,6 @@
         <link href="/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
         <link href="/assets/css/icons.css" rel="stylesheet" type="text/css">
         <link href="/assets/css/style.css" rel="stylesheet" type="text/css">
+        <link href="/assets/css/toastr.min.css" rel="stylesheet" type="text/css">
         @yield('css')
     </head>

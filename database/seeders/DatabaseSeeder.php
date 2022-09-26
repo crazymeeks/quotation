@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Customer;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Permission;
@@ -55,6 +56,14 @@ class DatabaseSeeder extends Seeder
             'deactivated_at' => null,
         ]);
         
+        Customer::factory()->create();
+        Customer::factory()->create([
+            'customer_name' => 'Jane Doe',
+        ]);
+
+        Customer::factory()->create([
+            'customer_name' => 'Samuel Austin',
+        ]);
 
     }
 }

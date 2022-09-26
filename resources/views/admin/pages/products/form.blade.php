@@ -155,12 +155,10 @@
                     data: data,
                     success: function(response){
                         const {message} = response;
-                        Swal.fire({
-                            icon: 'success',
-                            title: message,
-                        }).then(() => {
+                        toastr.success(message);
+                        setTimeout(() => {
                             window.location.href = "{{route('product.index')}}";
-                        });
+                        }, 2000);
                     }
                 });
             }
