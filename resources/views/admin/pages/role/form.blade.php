@@ -14,15 +14,6 @@
                 @if($role->id !== null)
                 <input type="hidden" id="id" value="{{$role->id}}">
                 @endif
-                <div class="form-group">
-                    <label>Permission</label>
-                    <select id="permission" name="permission" class="form-control">
-                        <option selected disabled>--select--</option>
-                        @foreach($permissions as $permission)
-                            <option @if($role->permission_id === $permission->id) selected @endif value="{{$permission->id}}">{{$permission->title}}</option>
-                        @endforeach
-                    </select>
-                </div>
 
                 <div class="form-group">
                     <label>Title</label>

@@ -8,8 +8,8 @@
 
                 <h4 class="mt-0 header-title">Roles</h4>
                 <p class="text-muted mb-4 font-13">
-                    Manage system roles.
-                    <a href="{{route('admin.role.get.new')}}" class="btn btn-info waves-effect waves-light">Add new</a>
+                    System roles.
+                    <!-- <a href="{{route('admin.role.get.new')}}" class="btn btn-info waves-effect waves-light">Add new</a> -->
                 </p>
 
                 <div class="table-responsive">
@@ -17,14 +17,13 @@
                         <thead>
                         <tr>
                             <th>Title</th>
-                            <th>Action</th>
                         </tr>
                         </thead>
                         <tbody>
                         @foreach($roles as $role)
                         <tr>
                             <td>{{$role->title}}</td>
-                            <td>
+                            <!-- <td>
                                 <div class="dropdown d-inline-block float-right">
                                     <a class="nav-link dropdown-toggle arrow-none" id="dLabel5" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                                         <i class="fas fa-ellipsis-v font-20 text-muted"></i>
@@ -34,7 +33,7 @@
                                         <a class="dropdown-item btn-delete" href="javascript:void(0);" data-id="{{$role->id}}">Delete</a>
                                     </div>
                                 </div>
-                            </td>
+                            </td> -->
                         </tr>
                         @endforeach
                         </tbody>

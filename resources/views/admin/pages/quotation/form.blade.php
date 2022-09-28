@@ -186,7 +186,8 @@
             let data = {
                 address: $('#address').val(),
                 contact_no: $('#contact_no').val(),
-                discount: $('#discount').val(),
+                discount: parseFloat($('#discount').val()),
+                code: $('#code').val(),
             };
 
             if (customerId) {
@@ -195,13 +196,15 @@
                 data.customer = $('#customer').val();
             }
 
+            console.log(data);
+
             $.ajax({
                 url: "{{route('admin.quotation.post.save')}}",
                 method: "POST",
                 data: data,
                 success: function(response){
                     const {message} = response;
-                    toaster.success(message);
+                    toastr.success(message);
                     setTimeout(() => {
                         window.location.href = window.location.href;
                     }, 2000);
@@ -209,7 +212,7 @@
                 error: function(xhr, status, thrown){
                     const response = xhr.responseJSON;
                     const {message} = response;
-                    toaster.error(message);
+                    toastr.error(message);
                 }
             });
         });

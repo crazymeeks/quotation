@@ -19,29 +19,11 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
 
-        $adminPerm = Permission::factory()->create([
-            'uuid' => generateUuid(),
-            'title' => 'Admin'
-        ]);
-
-        $readPerm = Permission::factory()->create([
-            'uuid' => generateUuid(),
-            'title' => 'Read'
-        ]);
-        $writePerm = Permission::factory()->create([
-            'uuid' => generateUuid(),
-            'title' => 'Write'
-        ]);
-
-        $adminRole = Role::factory()->create([
-            'permission_id' => $adminPerm->id,
-        ]);
+        $adminRole = Role::factory()->create();
         $userInRole = Role::factory()->create([
-            'permission_id' => $writePerm->id,
             'title' => 'UserIn'
         ]);
         $userOutRole = Role::factory()->create([
-            'permission_id' => $readPerm->id,
             'title' => 'UserOut'
         ]);
 

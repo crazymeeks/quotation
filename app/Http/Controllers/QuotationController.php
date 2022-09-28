@@ -42,6 +42,7 @@ class QuotationController extends Controller
         session()->put('quote_code', $quoteCode->code);
 
         $quoteProducts = $this->getQuoteProducts();
+        
         return view('admin.pages.quotation.form', [
             'code' => $quoteCode->code,
             'products' => $products,
@@ -73,7 +74,7 @@ class QuotationController extends Controller
 
                 $this->createQuotation($quote, $request);
             });
-
+            QuoteProduct::truncate();
             $request->session()->forget('quote_code');
             return response()->json(['message' => 'Quotation successfully saved.']);
         } catch (Exception $e) {
@@ -87,11 +88,10 @@ class QuotationController extends Controller
      * Create actual quotation
      *
      * @param \App\Models\Quotation $quote
-     * @param \App\Http\Requests\QuotationRequest $request
      * 
      * @return void
      */
-    private function createQuotation(Quotation $quote, QuotationRequest $request)
+    private function createQuotation(Quotation $quote)
     {
         
         $data = [];
@@ -140,7 +140,6 @@ class QuotationController extends Controller
             }
 
             QuotationHistoryProduct::insert($data);
-            
         }
     }
 
@@ -231,7 +230,7 @@ class QuotationController extends Controller
                                 'quote_products.id as quote_product_id',
                                 'quote_products.quantity as quote_product_quantity'
                                )
-                               ->leftJoin('quote_products', 'products.id', '=', 'quote_products.product_id')
+                               ->join('quote_products', 'products.id', '=', 'quote_products.product_id')
                                ->get();
 
         return $quoteProducts;

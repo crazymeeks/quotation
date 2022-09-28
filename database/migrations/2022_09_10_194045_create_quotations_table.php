@@ -19,7 +19,7 @@ return new class extends Migration
             createBigInteger($table, 'user_id');
             createUUIdField($table);
             $table->string('code', 30);
-            $table->decimal('percent_discount', 3, 2)->default(0.00);
+            $table->decimal('percent_discount', 8, 2)->default(0.00);
             $table->string('status', 15)->default('pending');
             $table->timestamps();
 
