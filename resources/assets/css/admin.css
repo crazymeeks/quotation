@@ -1,0 +1,35 @@
+#quote-header > h4 {
+    float: left;
+}
+
+#quote-header > span {
+    margin-top: 10px;
+    float: left;
+    margin-left: 16px;
+}
+
+#quote-header > span  > a{
+    color: #605daf;
+}
+
+.input-discount-box {
+    width: 70px;
+    float: left;
+}
+
+#percent-discount-box {
+    background: #999;
+    width: 27px;
+    float: left;
+    padding: 8px;
+    border-radius: 2px;
+}
+
+
+.clearfix:after { 
+    content: "."; 
+    visibility: hidden; 
+    display: block; 
+    height: 0; 
+    clear: both;
+ }

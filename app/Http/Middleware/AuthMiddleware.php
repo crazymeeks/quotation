@@ -16,8 +16,8 @@ class AuthMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!$request->session()->has('admin')) {
-            // abort(403);
+        if (!$request->session()->has('auth')) {
+            return redirect()->route('login');
         }
         
         return $next($request);

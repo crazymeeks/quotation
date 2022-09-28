@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\Hash;
 class LoginController extends Controller
 {
     
+    public function index()
+    {
+        return view('admin.pages.login.index');
+    }
+
     /**
      * Login
      *
@@ -45,7 +50,7 @@ class LoginController extends Controller
     protected function processLogin(User $user, Request $request)
     {
         if (Hash::check($request->password, $user->password)) {
-            $request->session()->put('admin', $user);
+            $request->session()->put('auth', $user);
             return redirect()->route('home');
         }
         return redirect()->back()->with('error', 'Invalid username or password.');

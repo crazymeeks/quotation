@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ActionAbilityMiddleware
@@ -16,13 +17,12 @@ class ActionAbilityMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        return $next($request);
+        // return $next($request);
         $loggedInUser = $request->session()->get('auth');
         
+        $role = $loggedInUser->role->title;
         
-        $allowedMethods = $this->getAllowedAction($loggedInUser->role->permission->title);
-        $requestMethod = strtolower($request->method());
-        if (in_array($requestMethod, $allowedMethods)) {
+        if (in_array($role, [User::ADMIN_ROLE, User::USERIN_ROLE])) {
             $request->merge([
                 'user' => $loggedInUser
             ]);

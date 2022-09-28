@@ -122,7 +122,7 @@ if (!function_exists('generate_string')) {
      * 
      * @return string
      */
-    function generate_string($strength = 16) {
+    function generate_string($strength = 16, bool $ucase = false) {
         $permitted_chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' . uniqid();
 
         $input_length = strlen($permitted_chars);
@@ -132,7 +132,7 @@ if (!function_exists('generate_string')) {
             $random_string .= $random_character;
         }
     
-        return $random_string;
+        return $ucase ? strtoupper($random_string) : $random_string;
     }
 }
 

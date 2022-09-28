@@ -8,6 +8,12 @@ use App\Models\UnitOfMeasure;
 class UnitOfMeasureControllerTest extends TestCase
 {
 
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->authenticateAsAdmin();
+    }
+
     /** @dataProvider data */
     public function testShouldAddUnitOfMeasure(array $data)
     {

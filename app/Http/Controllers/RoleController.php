@@ -26,16 +26,14 @@ class RoleController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function displayNewForm(Permission $permission)
+    public function displayNewForm()
     {
         $role = new stdClass();
         $role->id = null;
-        $role->permission_id = null;
         $role->uuid = null;
         $role->title = null;
 
         return view('admin.pages.role.form', [
-            'permissions' => $permission->get(),
             'header_title' => 'Create new role',
             'role' => $role,
         ]);
@@ -53,7 +51,6 @@ class RoleController extends Controller
         $role = Role::where('uuid', $uuid)->first();
 
         return view('admin.pages.role.form', [
-            'permissions' => Permission::get(),
             'header_title' => 'Update role',
             'role' => $role,
         ]);
@@ -75,8 +72,6 @@ class RoleController extends Controller
 
         $data = $request->except(['id']);
         
-        $data['permission_id'] = $request->permission;
-        unset($data['permission']);
         if (!$request->has('id')) {
             $data['uuid'] = generateUuid();
         }

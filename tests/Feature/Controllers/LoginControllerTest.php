@@ -20,8 +20,12 @@ class LoginControllerTest extends TestCase
 
     public function testShouldLogin()
     {
-        $response = $this->loginUser();
+        $request = [
+            'username' => 'admin',
+            'password' => 'password'
+        ];
 
-        $response->assertSessionHas('admin');
+        $response = $this->json('POST', route('admin.post.login'), $request);
+        $response->assertSessionHas('auth');
     }
 }

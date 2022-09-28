@@ -23,11 +23,14 @@ class QuotationRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        $rules = [
             'customer' => 'required',
             'address' => 'required',
             'contact_no' => 'required',
-            'items' => 'required',
         ];
+        if ($this->has('customer_id')) {
+            unset($rules['customer']);
+        }
+        return $rules;
     }
 }

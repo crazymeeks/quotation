@@ -21,15 +21,14 @@ use App\Http\Controllers\UnitOfMeasureController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+Route::get('/', [LoginController::class, 'index'])->name('login');
 Route::post('/login', [LoginController::class, 'postLogin'])->name('admin.post.login');
 
-Route::group(['prefix' => 'home'], function($route){
-    $route->get('/', [HomeController::class, 'getIndex'])->name('home');
-});
 
 Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
-
+    $route->group(['prefix' => 'home'], function($route){
+        $route->get('/', [HomeController::class, 'getIndex'])->name('home');
+    });
     /** Product */
     $route->group(['prefix' => 'products'], function($route){
         $route->get('/', [ProductController::class, 'index'])->name('product.index');
@@ -69,6 +68,11 @@ Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
         
         $route->group(['prefix' => 'product'], function($route){
             $route->post('/', [QuotationController::class, 'postAddProduct'])->name('admin.quotation.product.add.post');
+        });
+
+        $route->group(['prefix' => 'compute-discount'], function($route){
+            /** Compute discount on keyup in discount input */
+            $route->post('/', [QuotationController::class, 'postComputeDiscount'])->name('admin.quotation.compute.discount');
         });
     });
 

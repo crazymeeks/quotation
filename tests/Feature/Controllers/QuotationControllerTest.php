@@ -6,6 +6,7 @@ use Tests\TestCase;
 use App\Models\Product;
 use App\Models\Company;
 use App\Models\Customer;
+use App\Models\QuoteProduct;
 use App\Models\UnitOfMeasure;
 
 class QuotationControllerTest extends TestCase
@@ -17,13 +18,14 @@ class QuotationControllerTest extends TestCase
         parent::setUp();
         UnitOfMeasure::factory()->create();
         Company::factory()->create();
+        $this->authenticateAsUserIn();
     }
     
     /** @dataProvider data */
     public function testShouldCreateQuotation(array $data)
     {
         $product = Product::factory()->create();
-        $this->authenticateAsUserIn();
+        QuoteProduct::factory()->create();
 
         $response = $this->json('POST', route('admin.quotation.post.save'), $data);
         
@@ -42,9 +44,9 @@ class QuotationControllerTest extends TestCase
     {
         $customer = Customer::factory()->create();
         $data['customer_id'] = $customer->id;
-
+        QuoteProduct::factory()->create();
         $product = Product::factory()->create();
-        $this->authenticateAsUserIn();
+        
 
         $response = $this->json('POST', route('admin.quotation.post.save'), $data);
         
@@ -71,6 +73,7 @@ class QuotationControllerTest extends TestCase
      */
     public function testShouldAddProductQuotation()
     {
+
         $product = Product::factory()->create();
 
         $request = [
@@ -83,6 +86,22 @@ class QuotationControllerTest extends TestCase
         $this->assertArrayHasKey('html', $response);
     }
 
+    /**
+     * When user input discount quotation discount
+     * send ajax request to backend to update
+     * quotation being displayed
+     */
+    public function testShouldComputeDiscountAndDisplayQuotationProduct()
+    {
+        
+        $request = [
+            'discount' => 10,
+        ];
+        $response = $this->json('POST', route('admin.quotation.compute.discount'), $request);
+        
+        $this->assertTrue(str_contains($response->original['html'], '10%'));
+    }
+
     public function data()
     {
         $data = [
@@ -91,12 +110,6 @@ class QuotationControllerTest extends TestCase
             'contact_no' => '09898987876',
             'code' => strtoupper(uniqid()),
             'discount' => 0.00,
-            'items' => [
-                [
-                    'product_id' => 1,
-                    'quantity' => 1
-                ]
-            ]
         ];
 
         return [

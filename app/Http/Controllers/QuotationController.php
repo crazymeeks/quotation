@@ -6,6 +6,7 @@ use stdClass;
 use Exception;
 use App\Models\Product;
 use App\Models\Customer;
+use App\Models\QuoteCode;
 use App\Models\Quotation;
 use Illuminate\Http\Request;
 use App\Models\QuoteProduct;
@@ -23,14 +24,26 @@ class QuotationController extends Controller
      * Display quotation form
      *
      * @param \App\Models\Product $product
+     * @param \App\Models\QuoteCode $quoteCode
      * 
      * @return \Illuminate\View\View
      */
-    public function displayQuotationForm(Product $product)
+    public function displayQuotationForm(Product $product, QuoteCode $quoteCode)
     {
         $products = $product->active()->get();
+        $quoteCode = $quoteCode->first();
+        
+        if ($quoteCode === null || !session()->has('quote_code')) {
+            $quoteCode = QuoteCode::updateOrCreate([
+                'id' => 1
+            ], ['code' => generate_string(15, true)]);
+        }
+
+        session()->put('quote_code', $quoteCode->code);
+
         $quoteProducts = $this->getQuoteProducts();
         return view('admin.pages.quotation.form', [
+            'code' => $quoteCode->code,
             'products' => $products,
             'quoteProducts' => $quoteProducts,
             'discount' => 0,
@@ -60,8 +73,11 @@ class QuotationController extends Controller
 
                 $this->createQuotation($quote, $request);
             });
+
+            $request->session()->forget('quote_code');
             return response()->json(['message' => 'Quotation successfully saved.']);
         } catch (Exception $e) {
+            
             Log::error($e->getMessage());
             return response()->json(['message' => 'Oops! Something went wrong.', 'error' => $e->getMessage()], 500);
         }
@@ -77,8 +93,10 @@ class QuotationController extends Controller
      */
     private function createQuotation(Quotation $quote, QuotationRequest $request)
     {
-        $items = json_decode(json_encode($request->items));
+        
         $data = [];
+        $items = QuoteProduct::get();
+        
         foreach($items as $item){
             $product = $this->getProduct($item);
             
@@ -129,13 +147,13 @@ class QuotationController extends Controller
     /**
      * Get product
      * 
-     * @param \stdClass $item
+     * @param \App\Models\QuoteProduct $item
      *
      * @todo move this to repository
      * 
      * @return \stdClass
      */
-    protected function getProduct(stdClass $item)
+    protected function getProduct(QuoteProduct $item)
     {
         $product = DB::table('products')
                      ->select(
@@ -170,7 +188,7 @@ class QuotationController extends Controller
                 'contact_no' => $request->contact_no,
             ]);
         }
-
+        
         return $customer;
     }
 
@@ -197,12 +215,7 @@ class QuotationController extends Controller
                 'quantity' => $request->quantity
             ]);
 
-            $quoteProducts = $this->getQuoteProducts();
-
-            $html = view('admin.pages.quotation.quote-details-products', [
-                'quoteProducts' => $quoteProducts,
-                'discount' => $request->has('discount') ? $request->discount : 0,
-            ])->render();
+            $html = $this->getQuoteHtml($request);
 
             return response()->json(['html' => $html]);
         }
@@ -222,5 +235,46 @@ class QuotationController extends Controller
                                ->get();
 
         return $quoteProducts;
+    }
+
+    /**
+     * Get quote html tempalte
+     *
+     * @param \Illuminate\Http\Request $request
+     * 
+     * @return string
+     */
+    protected function getQuoteHtml(Request $request)
+    {
+        $quoteProducts = $this->getQuoteProducts();
+
+        $html = view('admin.pages.quotation.quote-details-products', [
+            'quoteProducts' => $quoteProducts,
+            'discount' => $request->has('discount') ? $request->discount : 0,
+        ])->render();
+        
+        return $html;
+    }
+
+    /**
+     * When user input discount quotation discount
+     * send ajax request to backend to update
+     * quotation being displayed
+     * 
+     * @param \Illuminate\Http\Request $request
+     */
+    public function postComputeDiscount(Request $request)
+    {
+        $request->validate([
+            'discount' => 'required'
+        ]);
+
+        $html = $this->getQuoteHtml($request);
+
+        return response()->json([
+            'html' => $html
+        ]);
+
+
     }
 }

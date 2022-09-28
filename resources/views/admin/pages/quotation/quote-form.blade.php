@@ -7,7 +7,9 @@
                         <form id="myform">
                             <div class="form-group row">
                                 <label for="contact_no" class="col-sm-2 col-form-label">Code: </label>
-                                <input type="text" id="code" name="code">
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" readonly id="code" name="code" value="{{$code}}">
+                                </div>
                             </div>
                             <div class="form-group row">
                                 <label for="customer" class="col-sm-2 col-form-label">Customer</label>
@@ -32,7 +34,12 @@
                             <div class="form-group row">
                                 <label for="discount" class="col-sm-2 col-form-label">Discount</label>
                                 <div class="col-sm-10">
-                                    <input class="form-control" name="discount" id="discount" type="number" value="0.00" placeholder="Enter discount here...">
+                                    <div class="input-discount-box">
+                                        <input class="form-control" name="discount" id="discount" type="number" value="0.00" placeholder="Enter discount here...">
+                                    </div>
+                                    <div id="percent-discount-box" class="clearfix">
+                                        <span>%</span>
+                                    </div>
                                 </div>
                             </div>
                         </form>

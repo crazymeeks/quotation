@@ -32,30 +32,16 @@ abstract class TestCase extends BaseTestCase
 
     protected function createRolesAndPermissions()
     {
-        $this->readPerm = Permission::factory()->create([
-            'title' => 'Read'
-        ]);
-
-        $this->writePerm = Permission::factory()->create([
-            'title' => 'Write'
-        ]);
-
-        $this->adminPerm = Permission::factory()->create([
-            'title' => 'Admin'
-        ]);
 
         $this->adminRole = Role::factory()->create([
-            'permission_id' => $this->adminPerm->id,
             'title' => 'Admin'
         ]);
 
         $this->userInRole = Role::factory()->create([
-            'permission_id' => $this->writePerm->id,
             'title' => 'User In'
         ]);
 
         $this->userOutRole = Role::factory()->create([
-            'permission_id' => $this->readPerm->id,
             'title' => 'User Out'
         ]);
 

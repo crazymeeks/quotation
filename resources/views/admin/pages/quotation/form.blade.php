@@ -138,60 +138,7 @@
             $('.autocomplete-items').html('');
         }
 
-        $('#myform').validate({
-            rules: {
-                name: "required",
-                cost:{
-                    required: true,
-                    number: true
-                },
-                inventory:{
-                    required: true,
-                    number: true
-                },
-                percent_discount: {
-                    number: true
-                },
-            },
-            submitHandler: function(form){
-                let data = {
-                    unit_of_measure: $('#unit_of_measure').val(),
-                    company: $('#company').val(),
-                    name: $('#name').val(),
-                    manufacturer_part_number: $('#manufacturer_part_number').val(),
-                    sales_description: $('#sales_description').val(),
-                    cost: $('#cost').val(),
-                    inventory: $('#inventory').val(),
-                    percent_discount: $('#percent_discount').val(),
-                    status: 'inactive',
-                };
-
-                if ($('.status').is(':checked')) {
-                    data.status = 'active';
-                }
-
-                if ($('#id').length > 0) {
-                    data.id = $('#id').val();
-                }
-                
-                $.ajax({
-                    url: "{{route('product.save')}}",
-                    method: "POST",
-                    data: data,
-                    success: function(response){
-                        const {message} = response;
-                        toastr.success(message);
-                        setTimeout(() => {
-                            window.location.href = "{{route('product.index')}}";
-                        }, 2000);
-                    }
-                });
-            }
-        });
-
         $('#product-list-modal-table').DataTable();
-
-
 
         $('#btn-add-to-quote').on('click', function(e){
             
@@ -211,6 +158,58 @@
                 success: function(response){
                     const {html} = response;
                     $('#quote-table').html(html);
+                }
+            });
+        });
+
+
+        const applyDiscount = debounce((e) => {
+            let $this = $(e.currentTarget);
+            
+            $.ajax({
+                url: "{{route('admin.quotation.compute.discount')}}",
+                method: "POST",
+                data: {
+                    discount: $this.val(),
+                },
+                success: function(response){
+                    const {html} = response;
+                    $('#quote-table').html(html);
+                }
+            });
+        }, 200);
+
+        $('#discount').on('keyup', applyDiscount);
+
+        $('#btn-save-quote').on('click', function(e){
+
+            let data = {
+                address: $('#address').val(),
+                contact_no: $('#contact_no').val(),
+                discount: $('#discount').val(),
+            };
+
+            if (customerId) {
+                data.customer_id = customerId;
+            } else {
+                data.customer = $('#customer').val();
+            }
+
+            $.ajax({
+                url: "{{route('admin.quotation.post.save')}}",
+                method: "POST",
+                data: data,
+                success: function(response){
+                    const {message} = response;
+                    toaster.success(message);
+                    setTimeout(() => {
+                        window.location.href = window.location.href;
+                    }, 2000);
+                },
+                error: function(xhr, status, thrown){
+                    const response = xhr.responseJSON;
+                    const {message} = response;
+                    toaster.error(message);
                 }
             });
         });

@@ -17,6 +17,7 @@ class ProductControllerTest extends TestCase
         
         Company::factory()->create();
         UnitOfMeasure::factory()->create();
+        $this->authenticateAsAdmin();
     }
 
     /** @dataProvider dataTableRequest */
