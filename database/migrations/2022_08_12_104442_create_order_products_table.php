@@ -25,6 +25,7 @@ return new class extends Migration
             createNullable($table, 'purchase_description', 300);
             createNullable($table, 'sales_description', 300);
             $table->decimal('price', 12, 2);
+            createBigInteger($table, 'quantity');
             $table->bigInteger('percent_discount')->default(0)->unsigned();
             $table->decimal('final_price', 12, 2);
             $table->timestamps();

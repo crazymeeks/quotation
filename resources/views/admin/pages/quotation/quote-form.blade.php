@@ -4,7 +4,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-xl-12">
-                        <form id="myform">
+                        <form id="myform" autocomplete="off">
                             <div class="form-group row">
                                 <label for="contact_no" class="col-sm-2 col-form-label">Code: </label>
                                 <div class="col-sm-10">
@@ -35,7 +35,7 @@
                                 <label for="discount" class="col-sm-2 col-form-label">Discount</label>
                                 <div class="col-sm-10">
                                     <div class="input-discount-box">
-                                        <input class="form-control" name="discount" id="discount" type="number" value="0.00" placeholder="Enter discount here...">
+                                        <input class="form-control" name="discount" id="discount" type="number" value="0.00" min="0" oninput="this.value = Math.abs(this.value)" placeholder="Enter discount here...">
                                     </div>
                                     <div id="percent-discount-box" class="clearfix">
                                         <span>%</span>

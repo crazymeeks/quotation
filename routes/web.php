@@ -68,12 +68,21 @@ Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
         
         $route->group(['prefix' => 'product'], function($route){
             $route->post('/', [QuotationController::class, 'postAddProduct'])->name('admin.quotation.product.add.post');
+            $route->put('/', [QuotationController::class, 'updateQuantity'])->name('admin.quotation.product.update.quantity');
+            $route->delete('/', [QuotationController::class, 'deleteItem'])->name('admin.quotation.product.delete');
+            /** Edit quote item quantity */
+            $route->post('/edit-item-modal', [QuotationController::class, 'postShowEditItemModal'])->name('admin.quotation.product.post.edit.modal');
+
+            /** Convert quote to order */
+            $route->post('/convert-to-order', [QuotationController::class, 'postConvertToOrder'])->name('admin.quotation.post.convert.to.order');
         });
 
         $route->group(['prefix' => 'compute-discount'], function($route){
             /** Compute discount on keyup in discount input */
             $route->post('/', [QuotationController::class, 'postComputeDiscount'])->name('admin.quotation.compute.discount');
         });
+
+        
     });
 
 });

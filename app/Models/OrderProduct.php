@@ -12,6 +12,7 @@ class OrderProduct extends Model
     use HasFactory;
 
     protected $fillable = [
+        'uuid',
         'order_id',
         'product_uuid',
         'unit_of_measure',
@@ -21,6 +22,7 @@ class OrderProduct extends Model
         'purchase_description',
         'sales_description',
         'price',
+        'quantity',
         'percent_discount',
         'final_price',
     ];

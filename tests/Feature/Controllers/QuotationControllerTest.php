@@ -6,8 +6,11 @@ use Tests\TestCase;
 use App\Models\Product;
 use App\Models\Company;
 use App\Models\Customer;
+use App\Models\Quotation;
+use App\Models\QuoteCode;
 use App\Models\QuoteProduct;
 use App\Models\UnitOfMeasure;
+use App\Models\QuotationProduct;
 
 class QuotationControllerTest extends TestCase
 {
@@ -24,6 +27,7 @@ class QuotationControllerTest extends TestCase
     /** @dataProvider data */
     public function testShouldCreateQuotation(array $data)
     {
+        QuoteCode::factory()->create();
         $product = Product::factory()->create();
         QuoteProduct::factory()->create();
 
@@ -42,6 +46,7 @@ class QuotationControllerTest extends TestCase
     /** @dataProvider data */
     public function testShouldCreateQuotationOnExistingCustomer(array $data)
     {
+        QuoteCode::factory()->create();
         $customer = Customer::factory()->create();
         $data['customer_id'] = $customer->id;
         QuoteProduct::factory()->create();
@@ -101,6 +106,81 @@ class QuotationControllerTest extends TestCase
         
         $this->assertTrue(str_contains($response->original['html'], '10%'));
     }
+
+    public function testShouldDisplayQuantityEditModal()
+    {
+        Product::factory()->create();
+        $qouteProduct = QuoteProduct::factory()->create();
+        $request = [
+            'id' => $qouteProduct->id,
+        ];
+        $response = $this->json('POST', route('admin.quotation.product.post.edit.modal'), $request);
+
+        $this->assertTrue(str_contains($response->original['html'], 'Update'));
+    }
+
+    public function testShouldUpdateQuoteItemQuantity()
+    {
+        Product::factory()->create();
+        $qouteProduct = QuoteProduct::factory()->create();
+        $request = [
+            'id' => $qouteProduct->id,
+            'quantity' => 10,
+        ];
+        $response = $this->json('PUT', route('admin.quotation.product.update.quantity'), $request);
+
+        $this->assertTrue(str_contains($response->original['html'], 'PHP 160,000.00'));
+    }
+
+    public function testShouldDeleteQuoteItem()
+    {
+        Product::factory()->create();
+        $qouteProduct = QuoteProduct::factory()->create();
+        $request = [
+            'id' => $qouteProduct->id,
+        ];
+        $response = $this->json('DELETE', route('admin.quotation.product.delete'), $request);
+        $this->assertArrayHasKey('html', $response->original);
+    }
+
+    /** @dataProvider data */
+    public function testShouldConvertQuoteToOrder(array $data)
+    {
+        QuoteCode::factory()->create();
+        Product::factory()->create();
+        QuoteProduct::factory()->create();
+
+        $this->json('POST', route('admin.quotation.post.convert.to.order'), $data);
+        $this->assertDatabaseHas('order_products', [
+            'final_price' => 16000
+        ]);
+        $this->assertDatabaseHas('quotations', [
+            'status' => Quotation::CONVERTED
+        ]);
+    }
+
+    public function testShouldConvertExistingQuoteToOrder()
+    {
+        Customer::factory()->create();
+        QuoteCode::factory()->create();
+        Product::factory()->create();
+        
+        $quotation = Quotation::factory()->create();
+        QuotationProduct::factory()->create();
+
+        $data = [
+            'id' => $quotation->id,
+        ];
+
+        $this->json('POST', route('admin.quotation.post.convert.to.order'), $data);
+        $this->assertDatabaseHas('order_products', [
+            'final_price' => 100
+        ]);
+        $this->assertDatabaseHas('quotations', [
+            'status' => Quotation::CONVERTED
+        ]);
+    }
+
 
     public function data()
     {

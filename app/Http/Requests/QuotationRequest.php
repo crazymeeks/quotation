@@ -27,10 +27,13 @@ class QuotationRequest extends FormRequest
             'customer' => 'required',
             'address' => 'required',
             'contact_no' => 'required',
-            'code' => 'required',
         ];
         if ($this->has('customer_id')) {
             unset($rules['customer']);
+        }
+
+        if ($this->has('id')) {
+            $rules = [];
         }
         return $rules;
     }

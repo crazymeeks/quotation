@@ -38,11 +38,11 @@ abstract class TestCase extends BaseTestCase
         ]);
 
         $this->userInRole = Role::factory()->create([
-            'title' => 'User In'
+            'title' => Role::USERIN_ROLE
         ]);
 
         $this->userOutRole = Role::factory()->create([
-            'title' => 'User Out'
+            'title' => Role::USEROUT_ROLE
         ]);
 
     }

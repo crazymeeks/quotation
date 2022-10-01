@@ -56,6 +56,8 @@
     </div>
 </div>
 @include('admin.pages.quotation.modal.product-select')
+@include('admin.pages.quotation.modal.edit-quote-item-containter')
+
 @include('admin.pages.quotation.quote-form')
 @include('admin.pages.quotation.quote-details')
 @endsection
@@ -92,6 +94,9 @@
 <script type="text/javascript">
     (function($){
         let customerId = null;
+        /** id of item being edited */
+        let itemId = null;
+        let discount = 0;
 
         let func = debounce((e) => {
             let value = e.currentTarget.value;
@@ -144,8 +149,6 @@
             
             let product = $('#quote-product').val();
             let quantity = $('#quantity').val();
-
-            let discount = $('#discount').val();
             
             $.ajax({
                 url: "{{route('admin.quotation.product.add.post')}}",
@@ -157,7 +160,8 @@
                 },
                 success: function(response){
                     const {html} = response;
-                    $('#quote-table').html(html);
+                    drawQuoteItemsHtml(html);
+                    $('.quote-modal').modal('hide');
                 }
             });
         });
@@ -165,16 +169,18 @@
 
         const applyDiscount = debounce((e) => {
             let $this = $(e.currentTarget);
-            
+
+            discount = $this.val();
+
             $.ajax({
                 url: "{{route('admin.quotation.compute.discount')}}",
                 method: "POST",
                 data: {
-                    discount: $this.val(),
+                    discount: discount,
                 },
                 success: function(response){
                     const {html} = response;
-                    $('#quote-table').html(html);
+                    drawQuoteItemsHtml(html);
                 }
             });
         }, 200);
@@ -186,7 +192,7 @@
             let data = {
                 address: $('#address').val(),
                 contact_no: $('#contact_no').val(),
-                discount: parseFloat($('#discount').val()),
+                discount: parseFloat(discount),
                 code: $('#code').val(),
             };
 
@@ -195,8 +201,6 @@
             } else {
                 data.customer = $('#customer').val();
             }
-
-            console.log(data);
 
             $.ajax({
                 url: "{{route('admin.quotation.post.save')}}",
@@ -216,6 +220,84 @@
                 }
             });
         });
+
+        // edit quote item
+        $('body').on('click', '.item-quote-edit-btn', function(e){
+            itemId = $(this).data('id');
+            
+            $.ajax({
+                url: "{{route('admin.quotation.product.post.edit.modal')}}",
+                method: "POST",
+                data: {
+                    id: itemId
+                },
+                success: function(response){
+                    const {html} = response;
+                    $('.edit-quote-modal').find('.modal-body').html(html);
+                    $('.edit-quote-modal').modal('show');
+                }
+            });
+        });
+
+        // update quote item quantity
+        $('.edit-quote-modal').on('click', '#quote-item-update-btn', function(e){
+            let quantity = $('.edit-quote-modal').find('#quantity').val();
+
+            $.ajax({
+                url: "{{route('admin.quotation.product.update.quantity')}}",
+                method: "PUT",
+                data: {
+                    id: itemId,
+                    quantity: quantity,
+                    discount: discount,
+                },
+                success: function(response){
+                    const {html} = response;
+                    drawQuoteItemsHtml(html);
+                    $('.edit-quote-modal').modal('hide');
+                    toastr.success("Quote item updated.");
+                },
+                error: function(xhr, status, thrown){
+                    console.log('error', xhr);
+                    toastr.error("Error while updating item quantity. Please try again.");
+                }
+            });
+        });
+
+        // remove quote item
+        $('body').on('click', '.item-quoute-delete-btn', function(e){
+            let id = $(this).data('id');
+            
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{route('admin.quotation.product.delete')}}",
+                        method: "DELETE",
+                        data: {
+                            id: id,
+                            discount: discount
+                        },
+                        success: function(response){
+                            const {html} = response;
+                            drawQuoteItemsHtml(html);
+                            toastr.success("Qoute item removed.");
+                        }
+                    });
+                }
+            });
+        });
+
+        function drawQuoteItemsHtml(html) {
+            $('#quote-table').html(html);
+        }
     })(jQuery);
 </script>
 @endsection

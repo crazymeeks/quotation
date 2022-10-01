@@ -11,6 +11,10 @@ class Role extends Model
 {
     use HasFactory;
 
+    const ADMIN_ROLE = 'Admin';
+    const USERIN_ROLE = 'UserIn';
+    const USEROUT_ROLE = 'UserOut';
+
     protected $fillable = [
         // 'permission_id',
         'uuid',

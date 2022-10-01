@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Role>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\QuoteCode>
  */
-class RoleFactory extends Factory
+class QuoteCodeFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,8 +17,7 @@ class RoleFactory extends Factory
     public function definition()
     {
         return [
-            'uuid' => generateUuid(),
-            'title' => 'Admin',
+            'code' => strtoupper(generate_string(15)),
         ];
     }
 }

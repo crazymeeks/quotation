@@ -1,4 +1,4 @@
-<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+<div class="modal fade quote-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -24,7 +24,7 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6"></div>
-                    <div class="col-md-6" style="margin-top: 15px;"><button id="btn-add-to-quote" class="btn btn-primary waves-effect waves-light">Add to Quoute</button></div>
+                    <div class="col-md-6" style="margin-top: 15px;"><button id="btn-add-to-quote" class="btn btn-primary waves-effect waves-light">Add to Quote</button></div>
                 </div>
             </div>
         </div><!-- /.modal-content -->

@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use App\Models\User;
+use App\Models\Role;
 use Illuminate\Http\Request;
 
 class ActionAbilityMiddleware
@@ -22,7 +22,7 @@ class ActionAbilityMiddleware
         
         $role = $loggedInUser->role->title;
         
-        if (in_array($role, [User::ADMIN_ROLE, User::USERIN_ROLE])) {
+        if (in_array($role, [Role::ADMIN_ROLE, Role::USERIN_ROLE])) {
             $request->merge([
                 'user' => $loggedInUser
             ]);

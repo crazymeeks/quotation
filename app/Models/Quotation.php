@@ -13,6 +13,7 @@ class Quotation extends Model
     const PENDING = 'pending';
     const DELIVERED = 'delivered';
     const RETURNED = 'returned';
+    const CONVERTED = 'converted to order';
 
     protected $fillable = [
         'customer_id',

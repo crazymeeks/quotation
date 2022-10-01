@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use stdClass;
 use Exception;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\Customer;
 use App\Models\QuoteCode;
 use App\Models\Quotation;
 use Illuminate\Http\Request;
 use App\Models\QuoteProduct;
+use App\Models\OrderProduct;
 use App\Models\QuotationHistory;
 use App\Models\QuotationProduct;
 use Illuminate\Support\Facades\DB;
@@ -19,6 +21,12 @@ use App\Http\Requests\QuotationRequest;
 
 class QuotationController extends Controller
 {
+
+    /** @var \App\Models\Quotation */
+    protected $quotation;
+
+    /** @var array */
+    protected $items = [];
     
     /**
      * Display quotation form
@@ -62,19 +70,7 @@ class QuotationController extends Controller
     public function postSave(QuotationRequest $request)
     {
         try {
-            $customer = $this->getCustomer($request);
-            DB::transaction(function() use ($request, $customer) {
-                $quote = Quotation::create([
-                    'customer_id' => $customer->id,
-                    'user_id' => $request->user->id,
-                    'uuid' => generateUuid(),
-                    'code' => $request->code,
-                    'percent_discount' => $request->discount,
-                ]);
-
-                $this->createQuotation($quote, $request);
-            });
-            QuoteProduct::truncate();
+            $this->saveQuotation($request);
             $request->session()->forget('quote_code');
             return response()->json(['message' => 'Quotation successfully saved.']);
         } catch (Exception $e) {
@@ -82,6 +78,36 @@ class QuotationController extends Controller
             Log::error($e->getMessage());
             return response()->json(['message' => 'Oops! Something went wrong.', 'error' => $e->getMessage()], 500);
         }
+    }
+
+    /**
+     * Save quotation
+     *
+     * @param \App\Http\Requests\QuotationRequest $request
+     * 
+     * @return \App\Models\Quotation
+     */
+    protected function saveQuotation(QuotationRequest $request)
+    {
+        $quoteCode = QuoteCode::first();
+        $customer = $this->getCustomer($request);
+        $quotation = DB::transaction(function() use ($request, $customer, $quoteCode) {
+            $quote = Quotation::create([
+                'customer_id' => $customer->id,
+                'user_id' => $request->user->id,
+                'uuid' => generateUuid(),
+                'code' => $quoteCode->code,
+                'percent_discount' => $request->discount,
+                'status' => $request->has('status') ? $request->status : Quotation::PENDING,
+            ]);
+
+            $this->createQuotation($quote, $request);
+            return $quote;
+        });
+        
+        QuoteProduct::truncate();
+
+        return $quotation;
     }
 
     /**
@@ -114,8 +140,9 @@ class QuotationController extends Controller
                 'quantity' => $item->quantity,
             ];
         }
+        $this->items = $data;
         if (count($data) > 0) {
-            $quoteProduct = QuotationProduct::insert($data);
+            QuotationProduct::insert($data);
 
             // create quotation history
             $quoteHistory = QuotationHistory::create([
@@ -273,7 +300,156 @@ class QuotationController extends Controller
         return response()->json([
             'html' => $html
         ]);
+    }
 
+    /**
+     * Show edit item modal
+     *
+     * @param \Illuminate\Http\Request $request
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function postShowEditItemModal(Request $request)
+    {
+        $request->validate([
+            'id' => 'required'
+        ]);
 
+        $qouteProduct = QuoteProduct::find($request->id);
+
+        $html = view('admin.pages.quotation.modal.edit-quote-item-body', ['qouteProduct' => $qouteProduct])->render();
+
+        return response()->json([
+            'html' => $html
+        ]);
+        
+    }
+
+    /**
+     * Update item quantity
+     * 
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateQuantity(Request $request)
+    {
+        $request->validate([
+            'id' => 'required',
+            'quantity' => 'required'
+        ]);
+
+        QuoteProduct::whereId($request->id)->update([
+            'quantity' => $request->quantity
+        ]);
+
+        $html = $this->getQuoteHtml($request);
+
+        return response()->json([
+            'html' => $html
+        ]);
+
+    }
+
+    /**
+     * Delete quote item
+     *
+     * @param \Illuminate\Http\Request $request
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteItem(Request $request)
+    {
+        $request->validate([
+            'id' => 'required'
+        ]);
+
+        QuoteProduct::find($request->id)->delete();
+
+        $html = $this->getQuoteHtml($request);
+
+        return response()->json([
+            'html' => $html
+        ]);
+
+    }
+
+    /**
+     * Convert quote to order
+     *
+     * @param \App\Http\Requests\QuotationRequest $request
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function postConvertToOrder(QuotationRequest $request)
+    {
+        try {
+            
+            if ($request->has('id')) {
+                DB::transaction(function() use ($request) {
+                    $quotation = Quotation::find($request->id);
+                    $quotation->status = Quotation::CONVERTED;
+                    $quotation->save();
+                    $quotationProducts = QuotationProduct::where('quotation_id', $quotation->id)->get();
+                    $items = collect($quotationProducts)->toArray();
+                    $this->createOrder($quotation, $items);
+                });
+            } else {
+                $request->merge([
+                    'status' => Quotation::CONVERTED
+                ]);
+                DB::transaction(function() use ($request) {
+                    $quotation = $this->saveQuotation($request);
+                    
+                    $this->createOrder($quotation, $this->items);
+                });
+                
+            }
+            return response()->json(['message' => 'Order has been created!']);        
+            
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json(['message' => 'Oops! Something went wrong!', 'error' => $e->getMessage()], 500);        
+        }
+    }
+
+    /**
+     * Create order from quotation
+     *
+     * @param \App\Models\Quotation $quotation
+     * @param array $items
+     * 
+     * @return void
+     */
+    protected function createOrder(Quotation $quotation, array $items)
+    {
+
+        $total = 0;
+        $items = array_map(function($item) use (&$total) {
+            unset($item['quotation_id'], $item['uuid']);
+            $item['final_price'] = $item['price'] * $item['quantity'];
+            $total += $item['final_price'];
+            return $item;
+        }, $items);
+        
+        $order = Order::create([
+            'customer_id' => $quotation->customer_id,
+            'user_id' => $quotation->user_id,
+            'uuid' => generateUuid(),
+            'reference_no' => $quotation->code,
+            'grand_total' => $total,
+            'percent_discount' => $quotation->percent_discount,
+            'status' => Order::PENDING,
+        ]);
+
+        $items = array_map(function($item) use ($order) {
+            $item['order_id'] = $order->id;
+            $item['uuid'] = generateUuid();
+            $item['created_at'] = now()->__toString();
+            $item['updated_at'] = now()->__toString();
+            return $item;
+        }, $items);
+
+        OrderProduct::insert($items);
     }
 }

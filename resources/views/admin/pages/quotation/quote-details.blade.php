@@ -9,7 +9,7 @@
                                 Quote Details
                             </h4>
                             <span>
-                                <a href="javascript:void(0);" data-toggle="modal" data-target=".bs-example-modal-lg"><i class="dripicons-plus"></i>Add Product(s)</a>
+                                <a href="javascript:void(0);" data-toggle="modal" data-target=".quote-modal"><i class="dripicons-plus"></i>Add Product(s)</a>
 
                             </span>
                         </div>
