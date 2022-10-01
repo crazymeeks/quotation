@@ -17,7 +17,7 @@
                 <h4 class="mt-0 header-title">Products</h4>
                 <p class="text-muted mb-4 font-13">
                     Manage products.
-                    <a href="{{route('product.add.new')}}" class="btn btn-info waves-effect waves-light">Add new</a>
+                    <a href="{{route('product.add.new')}}" class="btn btn-outline-primary btn-round waves-effect waves-light">Add new</a>
                 </p>
 
                 <div class="table-responsive">

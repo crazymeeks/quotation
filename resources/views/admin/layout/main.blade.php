@@ -32,7 +32,7 @@
                 </div> <!-- content -->
 
                 <footer class="footer">
-                    © 2022 Zoogler by Mannatthemes.
+                    © {{date('Y')}} nDent Web Services.
                 </footer>
 
             </div>

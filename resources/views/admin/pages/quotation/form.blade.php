@@ -51,7 +51,13 @@
 <div class="row">
     <div class="col-sm-12">
         <div class="page-title-box">
-            <h4 class="page-title">Create new quotation</h4>
+            <h4 class="page-title">
+            @if($quotation->status == null || $quotation->status == 'pending')
+                Create new quotation
+            @else
+                Quotation details
+            @endif
+            </h4>
         </div>
     </div>
 </div>
@@ -96,7 +102,7 @@
         let customerId = null;
         /** id of item being edited */
         let itemId = null;
-        let discount = 0;
+        let discount = <?php echo $quotation->percent_discount != null ? $quotation->percent_discount : 0; ?>;
 
         let func = debounce((e) => {
             let value = e.currentTarget.value;
@@ -288,11 +294,42 @@
                         success: function(response){
                             const {html} = response;
                             drawQuoteItemsHtml(html);
-                            toastr.success("Qoute item removed.");
+                            toastr.success("Quote item removed.");
                         }
                     });
                 }
             });
+        });
+
+        // Convert quotation to order
+        $('body').on('click', '#btn-convert-to-order', function(e){
+            let data = {};
+            if ($('#id').length > 0) {
+                data.id = $('#id').val();
+            }
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, convert!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{route('admin.quotation.post.convert.to.order')}}",
+                        method: "POST",
+                        data: data,
+                        success: function(response){
+                            const {html} = response;
+                            drawQuoteItemsHtml(html);
+                            toastr.success("Quote has been converted to order successfully.");
+                        }
+                    });
+                }
+            });
+            
         });
 
         function drawQuoteItemsHtml(html) {

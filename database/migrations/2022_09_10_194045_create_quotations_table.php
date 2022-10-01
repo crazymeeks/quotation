@@ -19,8 +19,8 @@ return new class extends Migration
             createBigInteger($table, 'user_id');
             createUUIdField($table);
             $table->string('code', 30);
-            $table->decimal('percent_discount', 8, 2)->default(0.00);
-            $table->string('status', 15)->default('pending');
+            $table->decimal('percent_discount', 12, 2)->default(0.00);
+            $table->string('status', 30)->default('pending');
             $table->timestamps();
 
             createForeignKey($table, 'customer_id', 'id', 'customers');

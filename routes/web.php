@@ -10,6 +10,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\UnitOfMeasureController;
+use App\Http\Controllers\QuotationHistoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,11 +63,20 @@ Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
     });
 
     /** Quotation */
-    $route->group(['prefix' => 'quotation'], function($route){
+    $route->group(['prefix' => 'quotations'], function($route){
+        $route->get('/', [QuotationController::class, 'index'])->name('admin.quotation.index');
         $route->post('/', [QuotationController::class, 'postSave'])->name('admin.quotation.post.save');
         $route->get('/new', [QuotationController::class, 'displayQuotationForm'])->name('admin.quotation.get.new');
-        
-        $route->group(['prefix' => 'product'], function($route){
+        $route->get('/{uuid}/edit', [QuotationController::class, 'editQuotation'])->name('admin.quotation.get.edit');
+        $route->get('/datatable', [QuotationController::class, 'getDataTable'])->name('admin.quotation.get.datatable');
+        $route->delete('/', [QuotationController::class, 'delete'])->name('admin.quotation.delete');
+
+        /** Quotation history */
+        $route->group(['prefix' => 'histories'], function($route){
+            $route->post('/versions', [QuotationHistoryController::class, 'postShowVersions'])->name('admin.quotation.histories.post.show.versions');
+        });
+
+        $route->group(['prefix' => 'products'], function($route){
             $route->post('/', [QuotationController::class, 'postAddProduct'])->name('admin.quotation.product.add.post');
             $route->put('/', [QuotationController::class, 'updateQuantity'])->name('admin.quotation.product.update.quantity');
             $route->delete('/', [QuotationController::class, 'deleteItem'])->name('admin.quotation.product.delete');

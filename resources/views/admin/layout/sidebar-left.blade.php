@@ -32,22 +32,19 @@
                             <li>
                                 <a href="javascript:void(0);" class="waves-effect"><i class="dripicons-user"></i> <span> Customers </span> <span class="float-right"></span></a>
                             </li>
-
                             <li>
                                 <a href="{{route('product.index')}}" class="waves-effect"><i class="dripicons-stack"></i><span> Products</a>
                             </li>
-
+                            <li>
+                                <a href="{{route('admin.quotation.index')}}" class="waves-effect"><i class="fas fa-users-cog"></i> <span> Quotations </span></a>
+                            </li>
                             <li>
                                 <a href="javascript:void(0);" class="waves-effect"><i class="far fa-money-bill-alt"></i><span> Orders </span></a>
                             </li>
-
                             <li>
                                 <a href="{{route('admin.role.get.index')}}" class="waves-effect"><i class="fas fa-gavel"></i> <span> Roles </span></a>
                             </li>
-
-                            <li>
-                                <a href="javascript:void(0);" class="waves-effect"><i class="fas fa-users-cog"></i> <span> System Users </span></a>
-                            </li>
+                            
                         </ul>
                     </div>
                     <div class="clearfix"></div>

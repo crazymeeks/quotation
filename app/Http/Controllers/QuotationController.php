@@ -17,17 +17,35 @@ use App\Models\QuotationProduct;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\QuotationHistoryProduct;
+use App\Repository\QuotationRepository;
 use App\Http\Requests\QuotationRequest;
 
 class QuotationController extends Controller
 {
 
-    /** @var \App\Models\Quotation */
-    protected $quotation;
-
     /** @var array */
     protected $items = [];
     
+    public function index()
+    {
+        return view('admin.pages.quotation.index');
+    }
+
+    /**
+     * Get data and display in datatable
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Repository\QuotationRepository $quotationRepository
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getDataTable(Request $request, QuotationRepository $quotationRepository)
+    {
+        $data = $quotationRepository->getDatatableData($request);
+        
+        return $data;
+    }
+
     /**
      * Display quotation form
      *
@@ -40,6 +58,7 @@ class QuotationController extends Controller
     {
         $products = $product->active()->get();
         $quoteCode = $quoteCode->first();
+        $quotation = new Quotation();
         
         if ($quoteCode === null || !session()->has('quote_code')) {
             $quoteCode = QuoteCode::updateOrCreate([
@@ -55,10 +74,105 @@ class QuotationController extends Controller
             'code' => $quoteCode->code,
             'products' => $products,
             'quoteProducts' => $quoteProducts,
-            'discount' => 0,
+            'quotation' => $quotation
         ]);
     }
 
+    /**
+     * Display edit form
+     *
+     * @param string $uuid
+     * 
+     * @return \Illuminate\View\View
+     */
+    public function editQuotation(string $uuid)
+    {
+        $quotation = Quotation::with(['customer'])->whereUuid($uuid)->first();
+        $products = Product::active()->get();
+        $productQuotations = $this->getRestructuredProductQuotation($quotation);
+        
+        return view('admin.pages.quotation.form', [
+            'code' => $quotation->code,
+            'products' => $products,
+            'quoteProducts' => json_decode(json_encode($productQuotations)),
+            'quotation' => $quotation,
+            'discount' => $quotation->percent_discount,
+        ]);
+    }
+
+    /**
+     * Delete quotation
+     * 
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function delete(Request $request)
+    {
+        $request->validate([
+            'code' => 'required'
+        ]);
+
+        $quotation = Quotation::whereCode($request->code)
+                             ->whereStatus(Quotation::PENDING)
+                             ->first();
+        
+        if ($quotation) {
+            QuotationProduct::where('quotation_id', $quotation->id)->delete();
+    
+            $quotationHistory = QuotationHistory::whereCode($request->code)->first();
+            if ($quotationHistory) {
+                QuotationHistoryProduct::where('quotation_history_id', $quotationHistory->id)->delete();
+                $quotationHistory->delete();
+            }
+            
+            $quotation->delete();
+    
+            return response()->json([
+                'message' => 'Quotation has been deleted.'
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Quotation not found.'
+        ], 404);
+    }
+
+    /**
+     * Get product quotations
+     *
+     * @param \App\Models\Quotation $quotation
+     * 
+     * @return array
+     */
+    protected function getRestructuredProductQuotation(Quotation $quotation)
+    {
+        $quoteProducts = QuotationProduct::where('quotation_id', $quotation->id)->get();
+
+        $data = [];
+        foreach($quoteProducts as $quoteProduct){
+            $data[] = $this->reStructureQuoteProduct($quoteProduct);
+        }
+
+        return $data;
+    }
+
+    /**
+     * Structure quotation product
+     *
+     * @param \App\Models\QuotationProduct $quoteProduct
+     * 
+     * @return array
+     */
+    protected function reStructureQuoteProduct(QuotationProduct $quoteProduct)
+    {
+        return [
+            'name' => $quoteProduct->product_name,
+            'cost' => $quoteProduct->price,
+            'quote_product_quantity' => $quoteProduct->quantity,
+            'quote_product_id' => $quoteProduct->uuid,
+        ];
+    }
 
     /**
      * Save quotation
@@ -69,6 +183,10 @@ class QuotationController extends Controller
      */
     public function postSave(QuotationRequest $request)
     {
+        $quoteProduct = QuoteProduct::count();
+        if ($quoteProduct <= 0) {
+            return response()->json(['message' => 'Please add product!'], 403);
+        }
         try {
             $this->saveQuotation($request);
             $request->session()->forget('quote_code');
@@ -138,6 +256,8 @@ class QuotationController extends Controller
                 'sales_description' => $product->sales_description,
                 'price' => $product->cost,
                 'quantity' => $item->quantity,
+                'created_at' => now()->__toString(),
+                'updated_at' => now()->__toString(),
             ];
         }
         $this->items = $data;
@@ -249,6 +369,11 @@ class QuotationController extends Controller
         return response()->json(['message' => 'Product could not be found.'], 400);
     }
 
+    /**
+     * Get products of a quotation
+     *
+     * @return \Illuminate\Support\Collection
+     */
     protected function getQuoteProducts()
     {
         $quoteProducts = DB::table('products')
@@ -267,12 +392,17 @@ class QuotationController extends Controller
      * Get quote html tempalte
      *
      * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Quotation $quotation
      * 
      * @return string
      */
-    protected function getQuoteHtml(Request $request)
+    protected function getQuoteHtml(Request $request, Quotation $quotation = null)
     {
         $quoteProducts = $this->getQuoteProducts();
+        if ($quotation instanceof Quotation) {
+            $quoteProducts = json_decode(json_encode($this->getRestructuredProductQuotation($quotation)));
+            
+        }
 
         $html = view('admin.pages.quotation.quote-details-products', [
             'quoteProducts' => $quoteProducts,
@@ -315,9 +445,15 @@ class QuotationController extends Controller
             'id' => 'required'
         ]);
 
-        $qouteProduct = QuoteProduct::find($request->id);
+        $quoteProduct = QuoteProduct::find($request->id);
 
-        $html = view('admin.pages.quotation.modal.edit-quote-item-body', ['qouteProduct' => $qouteProduct])->render();
+        if ($quoteProduct === null) {
+            // we are on edit existing quotation, therefore
+            // find quotation products in quotation_products table
+            $quoteProduct = QuotationProduct::whereUuid($request->id)->first();
+        }
+
+        $html = view('admin.pages.quotation.modal.edit-quote-item-body', ['quoteProduct' => $quoteProduct])->render();
 
         return response()->json([
             'html' => $html
@@ -338,12 +474,41 @@ class QuotationController extends Controller
             'id' => 'required',
             'quantity' => 'required'
         ]);
+        $quotation = null;
+        $quoteProduct = QuoteProduct::whereId($request->id)->first();
+        if ($quoteProduct === null) {
+            // we are on edit existing quotation, therefore
+            // find quotation products in quotation_products table
+            $quoteProduct = QuotationProduct::whereUuid($request->id)->first();
+            $quoteProduct->quantity = $request->quantity;
+            $quoteProduct->updated_at = now()->__toString();
+            $quoteProduct->save();
 
-        QuoteProduct::whereId($request->id)->update([
-            'quantity' => $request->quantity
-        ]);
+            /** @todo too many database fetching here... refactor */
+            $quotation = Quotation::whereId($quoteProduct->quotation_id)->first();
+            
+            // update quotation history
+            $quotationHistory = QuotationHistory::whereCode($quotation->code)->first();
+            // get latest quotation history product
+            $quotationHistoryProduct = QuotationHistoryProduct::where('quotation_history_id', $quotationHistory->id)
+                                                              ->orderBy('id', 'desc')
+                                                              ->limit(1)
+                                                              ->first();
+            $item = collect($quotationHistoryProduct)->toArray();
+            $item['version'] = $item['version'] + 1;
+            $item['quantity'] = $request->quantity;
+            $item['created_at'] = now()->__toString();
+            $item['updated_at'] = now()->__toString();
+            /** @todo what to do if the cost of the product changes? */
+            QuotationHistoryProduct::create($item);
+            
+        } else {
+            $quoteProduct->quantity = $request->quantity;
+            $quoteProduct->updated_at = now()->__toString();
+            $quoteProduct->save();
+        }
 
-        $html = $this->getQuoteHtml($request);
+        $html = $this->getQuoteHtml($request, $quotation);
 
         return response()->json([
             'html' => $html

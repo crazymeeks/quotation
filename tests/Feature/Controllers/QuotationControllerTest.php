@@ -10,7 +10,9 @@ use App\Models\Quotation;
 use App\Models\QuoteCode;
 use App\Models\QuoteProduct;
 use App\Models\UnitOfMeasure;
+use App\Models\QuotationHistory;
 use App\Models\QuotationProduct;
+use App\Models\QuotationHistoryProduct;
 
 class QuotationControllerTest extends TestCase
 {
@@ -132,6 +134,40 @@ class QuotationControllerTest extends TestCase
         $this->assertTrue(str_contains($response->original['html'], 'PHP 160,000.00'));
     }
 
+    /**
+     * When updating an existing quote item, we are passing
+     * the uuid value from quotation_products table where
+     * quotation products are saved
+     */
+    public function testShouldUpdateExistingQuoteItemQuantity()
+    {
+        $code = strtoupper(generate_string(15));
+        Product::factory()->create();
+        Customer::factory()->create();
+        Quotation::factory()->create([
+            'code' => $code
+        ]);
+
+        QuotationHistory::factory()->create([
+            'code' => $code,
+        ]);
+
+        QuotationHistoryProduct::factory()->create();
+
+        $qouteProduct = QuotationProduct::factory()->create();
+        $request = [
+            'id' => $qouteProduct->uuid,
+            'quantity' => 10,
+        ];
+        $response = $this->json('PUT', route('admin.quotation.product.update.quantity'), $request);
+        
+        $this->assertTrue(str_contains($response->original['html'], 'PHP 1,000.00'));
+        $this->assertDatabaseHas('quotation_history_products', [
+            'version' => 2
+        ]);
+    }
+
+
     public function testShouldDeleteQuoteItem()
     {
         Product::factory()->create();
@@ -181,6 +217,62 @@ class QuotationControllerTest extends TestCase
         ]);
     }
 
+    /** @dataProvider dataTableRequest */
+    public function testGetQuotations(array $dataTableRequest)
+    {
+        Customer::factory()->create();
+        QuoteCode::factory()->create();
+        Product::factory()->create();
+        
+        Quotation::factory()->create();
+        QuotationProduct::factory()->create();
+        $response = $this->json('GET', route('admin.quotation.get.datatable'), $dataTableRequest);
+        $response->assertJsonStructure([
+            'draw',
+            'recordsTotal',
+            'recordsFiltered',
+            'data' => [
+                [
+                    'id',
+                    'customer_id',
+                    'user_id',
+                    'uuid',
+                    'code',
+                    'percent_discount',
+                    'status',
+                    'customer_name'
+                ]
+            ]
+        ]);
+    }
+
+    public function testShouldDeletePendingQuotation()
+    {
+        $code = strtoupper(generate_string(15));
+
+        Customer::factory()->create();
+        Quotation::factory()->create([
+            'code' => $code
+        ]);
+
+        QuotationProduct::factory()->create();
+
+        QuotationHistory::factory()->create([
+            'code' => $code
+        ]);
+
+        QuotationHistoryProduct::factory()->create();
+
+        $request = [
+            'code' => $code
+        ];
+
+        $this->json('DELETE', route('admin.quotation.delete'), $request);
+
+        $quotationHistory = QuotationHistory::first();
+        $this->assertNull($quotationHistory);
+    }
+
 
     public function data()
     {
@@ -194,6 +286,66 @@ class QuotationControllerTest extends TestCase
 
         return [
             array($data)
+        ];
+    }
+
+
+    public function dataTableRequest()
+    {
+        $dt = [
+            'draw' => 1,
+            'columns' => [
+                
+                [
+                    'data' => 'code',
+                    'name' => NULL,
+                    'searchable' => 'true',
+                    'orderable' => 'true',
+                    'search' => [
+                        'value' => NULL,
+                        'regex' => 'false'
+                    ]
+                ],
+                [
+                    'data' => 'customer',
+                    'name' => NULL,
+                    'searchable' => 'true',
+                    'orderable' => 'true',
+                    'search' => [
+                        'value' => NULL,
+                        'regex' => 'false'
+                    ]
+                ],
+                [
+                    'data' => 'status',
+                    'name' => NULL,
+                    'searchable' => 'true',
+                    'orderable' => 'true',
+                    'search' => [
+                        'value' => NULL,
+                        'regex' => 'false'
+                    ]
+                ],
+                
+
+            ],
+            'order' => [
+                [
+                    'column' => '0',
+                    'dir' => 'desc'
+                ]
+            ],
+            'start' => '0',
+            'length' => '10',
+            'search' => [
+                'value' => '',
+                'regex' => 'false'
+            ],
+            '_' => '1600436890036',
+        ];
+
+        return [
+            array($dt)
         ];
     }
 }
