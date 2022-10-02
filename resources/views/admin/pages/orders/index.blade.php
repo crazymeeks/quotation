@@ -92,7 +92,7 @@
                             css_class = 'badge-success';
                         }
 
-                        return `<span class="badge ${css_class}">${status}</span>`;
+                        return `<span class="badge-small badge ${css_class}">${status}</span>`;
                     }
                 },
                 {
@@ -100,7 +100,7 @@
                     searchable: false,
                     orderable: false,
                     render: function(data, type, row, meta){
-                        let a = `<a class="badge badge-pill badge-outline-primary" href="/quotations/${row.uuid}/edit">View</a>&nbsp;&nbsp;`;
+                        let a = `<a class="badge badge-pill badge-outline-primary badge-medium" href="/quotations/${row.uuid}/edit">View</a>&nbsp;&nbsp;`;
                         
                         return a;
                     }

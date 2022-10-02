@@ -18,4 +18,12 @@
         <link href="/assets/css/toastr.min.css" rel="stylesheet" type="text/css">
         <link href="/assets/css/admin.css?v={{uniqid()}}" rel="stylesheet" type="text/css">
         @yield('css')
+        <style>
+            .badge-medium {
+                font-size: 17px;
+            }
+            .badge-small {
+                font-size: 14px;
+            }
+        </style>
     </head>

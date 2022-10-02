@@ -101,14 +101,46 @@ class QuotationControllerTest extends TestCase
         ]);
     }
 
-    /**
-     * Undocumented function
-     *
-     * @return void
-     */
+
+    /** @dataProvider data */
+    public function testShouldUpdateProductsOfExistingQuote(array $data)
+    {
+        $customer = Customer::factory()->create([
+            'customer_name' => $data['customer'],
+        ]);
+        
+        $product = Product::factory()->create();
+        $productB = Product::factory()->create([
+            'name' => 'Product B'
+        ]);
+        $quotation = Quotation::factory()->create();
+        QuotationProduct::factory()->create([
+            'quotation_id' => $quotation->id,
+        ]);
+
+        // Add new product to existing quote
+        QuoteProduct::factory()->create([
+            'product_id' => $productB->id,
+            'quantity' => 1,
+        ]);
+
+        $data['id'] = $quotation->id;
+
+        $response = $this->json('POST', route('admin.quotation.post.save'), $data);
+        
+        $count = QuotationProduct::count();
+        $this->assertSame(2, $count);
+        $this->assertEquals("Quotation successfully saved.", $response->original['message']);
+        $this->assertDatabaseHas('quotations', [
+            'customer_id' => $customer->id
+        ]);
+        $this->assertDatabaseHas('quotation_products', [
+            'product_name' => $product->name
+        ]);
+    }
+
     public function testShouldAddProductQuotation()
     {
-
         $product = Product::factory()->create();
 
         $request = [
@@ -119,6 +151,28 @@ class QuotationControllerTest extends TestCase
         $response = $this->json('POST', route('admin.quotation.product.add.post'), $request);
         
         $this->assertArrayHasKey('html', $response);
+    }
+
+    public function testShouldAddNewProductToExistingQuotation()
+    {
+        Customer::factory()->create();
+        Product::factory()->create();
+        $productB = Product::factory()->create([
+            'name' => 'Product B',
+        ]);
+        
+        $quotation = Quotation::factory()->create();
+        QuotationProduct::factory()->create();
+        
+
+        $request = [
+            'product' => $productB->id,
+            'quantity' => 1,
+            'id' => $quotation->id,
+        ];
+
+        $response = $this->json('POST', route('admin.quotation.product.add.post'), $request);
+        $this->assertTrue(str_contains($response->original['html'], 'PHP 16,100.00'));
     }
 
     /**
@@ -182,9 +236,9 @@ class QuotationControllerTest extends TestCase
 
         QuotationHistoryProduct::factory()->create();
 
-        $qouteProduct = QuotationProduct::factory()->create();
+        $quotationProduct = QuotationProduct::factory()->create();
         $request = [
-            'id' => $qouteProduct->uuid,
+            'id' => $quotationProduct->uuid,
             'quantity' => 10,
         ];
         $response = $this->json('PUT', route('admin.quotation.product.update.quantity'), $request);

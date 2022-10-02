@@ -60,10 +60,11 @@ class QuotationRepository
                            ->limit($limit)
                            ->offset($offset)
                            ->orderBy($column, $orderDirection)
+                           ->groupBy('quotations.id')
                            ->get();
 
         $quotations = $quotations->toArray();
-
+        
         $totalRecords = count($quotations);
         $data = [
             'draw' => $request->draw,

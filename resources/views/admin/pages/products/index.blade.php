@@ -92,8 +92,8 @@
                     searchable: false,
                     orderable: false,
                     render: function(data, type, row, meta){
-                        let a = `<a class="badge badge-pill badge-outline-primary" href="/products/edit/${row.uuid}">View</a>&nbsp;&nbsp;`;
-                        a += `<a class="badge badge-pill badge-outline-danger icon-delete" class="icon-delete" data-id="${row.id}" href="javascript:void(0);">Delete</a>&nbsp;&nbsp;`;
+                        let a = `<a class="badge badge-pill badge-outline-primary badge-medium" href="/products/edit/${row.uuid}">View</a>&nbsp;&nbsp;`;
+                        a += `<a class="badge badge-pill badge-outline-danger badge-medium icon-delete" class="icon-delete" data-id="${row.id}" href="javascript:void(0);">Delete</a>&nbsp;&nbsp;`;
                         return a;
                     }
                 },

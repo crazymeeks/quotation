@@ -19,18 +19,18 @@
                             <input type="hidden" id="id" value="{{$product->id}}">
                             @endif
                             <div class="form-group row">
-                                <label for="unit_of_measure" class="col-sm-2 col-form-label">Unit of measure</label>
+                                <label for="unit_of_measure" class="col-sm-2 col-form-label">Unit of measure <span class="text-danger">*</span></label>
                                 <div class="col-sm-10">
                                     <select name="unit_of_measure" class="form-control" id="unit_of_measure">
                                         <option selected disabled>--select--</option>
                                         @foreach($units as $unit)
-                                        <option value="{{$unit->id}}">{{$unit->title}}</option>
+                                        <option {{$product->unit_of_measure_id == $unit->id ? 'selected' : null}} value="{{$unit->id}}">{{$unit->title}}</option>
                                         @endforeach
                                     </select>
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="company" class="col-sm-2 col-form-label">Company</label>
+                                <label for="company" class="col-sm-2 col-form-label">Company <span class="text-danger">*</span></label>
                                 <div class="col-sm-10">
                                     <select name="company" class="form-control" id="company">
                                         <option selected disabled>--select--</option>
@@ -41,7 +41,7 @@
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="name" class="col-sm-2 col-form-label">Product name</label>
+                                <label for="name" class="col-sm-2 col-form-label">Product name <span class="text-danger">*</span></label>
                                 <div class="col-sm-10">
                                     <input class="form-control" name="name" id="name" type="text" value="{{$product->name}}" placeholder="Product name here...">
                                 </div>
@@ -65,21 +65,21 @@
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="cost" class="col-sm-2 col-form-label">Cost</label>
+                                <label for="cost" class="col-sm-2 col-form-label">Cost <span class="text-danger">*</span></label>
                                 <div class="col-sm-10">
-                                    <input class="form-control" name="cost" id="cost" type="number" value="{{$product->cost}}" placeholder="Enter cost here...">
+                                    <input class="form-control" name="cost" id="cost" type="number" value="{{$product->cost}}" min="1" oninput="this.value = Math.abs(this.value)" placeholder="Enter cost here...">
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label for="percent_discount" class="col-sm-2 col-form-label">Percent discount</label>
                                 <div class="col-sm-10">
-                                    <input class="form-control" name="percent_discount" id="percent_discount" type="number" value="{{$product->percent_discount}}" placeholder="Enter discount percentage here...">
+                                    <input class="form-control" name="percent_discount" id="percent_discount" type="number" min="0" oninput="this.value = Math.abs(this.value)" value="{{$product->percent_discount}}" placeholder="Enter discount percentage here...">
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="inventory" class="col-sm-2 col-form-label">Stocks/Inventory</label>
+                                <label for="inventory" class="col-sm-2 col-form-label">Stocks/Inventory <span class="text-danger">*</span></label>
                                 <div class="col-sm-10">
-                                    <input class="form-control" name="inventory" id="inventory" type="number" value="{{$product->inventory}}" placeholder="Enter stocks here...">
+                                    <input class="form-control" name="inventory" id="inventory" type="number" value="{{$product->inventory}}" min="1" oninput="this.value = Math.abs(this.value)" placeholder="Enter stocks here...">
                                 </div>
                             </div>
                             
@@ -115,6 +115,8 @@
     (function($){
         $('#myform').validate({
             rules: {
+                unit_of_measure: "required",
+                company: "required",
                 name: "required",
                 cost:{
                     required: true,

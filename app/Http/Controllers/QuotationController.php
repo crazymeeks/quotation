@@ -6,6 +6,7 @@ use stdClass;
 use Exception;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Company;
 use App\Models\Customer;
 use App\Models\QuoteCode;
 use App\Models\Quotation;
@@ -91,7 +92,7 @@ class QuotationController extends Controller
         $quotation = Quotation::with(['customer'])->whereUuid($uuid)->first();
         $products = Product::active()->get();
         $productQuotations = $this->getRestructuredProductQuotation($quotation);
-            
+        
         return view('admin.pages.quotation.form', [
             'code' => $quotation->code,
             'products' => $products,
@@ -231,9 +232,8 @@ class QuotationController extends Controller
                     'percent_discount' => $request->discount,
                     'status' => $request->has('status') ? $request->status : Quotation::PENDING,
                 ]);
-    
-                $this->createQuotation($quote, $request);
             }
+            $this->createQuotation($quote, $request);
             return $quote;
         });
         
@@ -296,7 +296,7 @@ class QuotationController extends Controller
             QuotationProduct::insert($data);
 
             // create quotation history
-            $quoteHistory = QuotationHistory::create([
+            $quoteHistory = QuotationHistory::updateOrCreate(['code' => $quote->code], [
                 'code' => $quote->code
             ]);
 
@@ -390,15 +390,18 @@ class QuotationController extends Controller
             'quantity' => 'required|numeric',
         ]);
 
-
+        
         $product = Product::whereId($request->product)->first();
 
         if ($product) {
             QuoteProduct::updateOrCreate(['product_id' => $product->id], [
                 'quantity' => $request->quantity
             ]);
-            $quotation = new stdClass();
-            $quotation->status = null;
+            
+            $quotation = new Quotation();
+            if ($request->has('id')) {
+                $quotation = Quotation::find($request->id);
+            }
             $html = $this->getQuoteHtml($request, $quotation);
 
             return response()->json(['html' => $html]);
@@ -436,12 +439,23 @@ class QuotationController extends Controller
      */
     protected function getQuoteHtml(Request $request, $quotation = null)
     {
-        $quoteProducts = $this->getQuoteProducts();
+        $quoteProducts = $this->getQuoteProducts()->toArray();
         
         if ($quotation instanceof Quotation) {
-            $quoteProducts = json_decode(json_encode($this->getRestructuredProductQuotation($quotation)));
+            $quoteProducts = array_map(function($item){
+                return [
+                    'name' => $item->name,
+                    'cost' => $item->cost,
+                    'quote_product_quantity' => $item->quote_product_quantity,
+                    'quote_product_id' => $item->quote_product_id,
+                ];
+            }, $quoteProducts);
+            
+            $quoteProducts = array_merge($this->getRestructuredProductQuotation($quotation), $quoteProducts);
             
         }
+        $quoteProducts = json_decode(json_encode($quoteProducts));
+        
 
         $html = view('admin.pages.quotation.quote-details-products', [
             'quoteProducts' => $quoteProducts,
@@ -538,11 +552,14 @@ class QuotationController extends Controller
             $quotationHistory = QuotationHistory::whereCode($quotation->code)->first();
             // get latest quotation history product
             $quotationHistoryProduct = QuotationHistoryProduct::where('quotation_history_id', $quotationHistory->id)
+                                                              ->where('product_name', $quoteProduct->product_name)
+                                                              ->first();
+            $historyVersion = QuotationHistoryProduct::select('version')
+                                                              ->where('quotation_history_id', $quotationHistory->id)
                                                               ->orderBy('id', 'desc')
-                                                              ->limit(1)
                                                               ->first();
             $item = collect($quotationHistoryProduct)->toArray();
-            $item['version'] = $item['version'] + 1;
+            $item['version'] = $historyVersion->version + 1;
             $item['quantity'] = $request->quantity;
             $item['created_at'] = now()->__toString();
             $item['updated_at'] = now()->__toString();

@@ -24,8 +24,8 @@
             <td>PHP {{number_format($rowTotal, 2)}}</td>
             <td>
             @if($quotation->status == null || $quotation->status == 'pending')
-                <a href="javascript:void(0);" class="item-quote-edit-btn text-success" data-id="{{$product->quote_product_id}}">edit</a> &nbsp;
-                <a href="javascript:void(0);" class="item-quoute-delete-btn text-danger" data-id="{{$product->quote_product_id}}">remove</a>
+                <a href="javascript:void(0);" class="item-quote-edit-btn badge badge-pill badge-outline-info badge-medium" data-id="{{$product->quote_product_id}}">edit</a> &nbsp;
+                <a href="javascript:void(0);" class="item-quoute-delete-btn badge badge-pill badge-outline-danger badge-medium" data-id="{{$product->quote_product_id}}">remove</a>
             @else
             -
             @endif

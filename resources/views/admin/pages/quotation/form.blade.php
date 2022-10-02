@@ -138,16 +138,6 @@
 
         $('.typeahead').on('keyup', func);
 
-        // uppercasing input values
-        // $('#customer').on('keyup', function(evt){
-        //     $(this).val($(this).val().toUpperCase());
-        // });
-
-        // $('#address').on('keyup', function(evt){
-        //     $(this).val($(this).val().toUpperCase());
-        // });
-        
-
         $('.autocomplete-items').on('click', '.item', function(evt){
             let value = $(this).data('value');
             customerId = $(this).data('id');
@@ -170,15 +160,20 @@
             
             let product = $('#quote-product').val();
             let quantity = $('#quantity').val();
+
+            let data = {
+                product: product,
+                quantity: quantity,
+            };
+
+            if ($('#id').length > 0) {
+                data.id = $('#id').val();
+            }
             
             $.ajax({
                 url: "{{route('admin.quotation.product.add.post')}}",
                 method: "POST",
-                data: {
-                    product: product,
-                    quantity: quantity,
-                    discount: discount,
-                },
+                data: data,
                 success: function(response){
                     const {html} = response;
                     drawQuoteItemsHtml(html);
@@ -232,7 +227,7 @@
                     const {message} = response;
                     toastr.success(message);
                     setTimeout(() => {
-                        window.location.href = window.location.href;
+                        window.location.href = "{{route('admin.quotation.index')}}";
                     }, 2000);
                 },
                 error: function(xhr, status, thrown){

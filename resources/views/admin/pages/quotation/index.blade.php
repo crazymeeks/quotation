@@ -66,7 +66,7 @@
                             css_class = 'badge-success';
                         }
 
-                        return `<span class="badge ${css_class}">${status}</span>`;
+                        return `<span class="badge badge-small ${css_class}">${status}</span>`;
                     }
                 },
                 {
@@ -74,11 +74,11 @@
                     searchable: false,
                     orderable: false,
                     render: function(data, type, row, meta){
-                        let a = `<a class="badge badge-pill badge-outline-primary" href="/quotations/${row.uuid}/edit">View</a>&nbsp;&nbsp;`;
+                        let a = `<a class="badge badge-pill badge-outline-primary badge-medium" href="/quotations/${row.uuid}/edit">View</a>&nbsp;&nbsp;`;
                         if (row.status == 'pending') {
-                            a += `<a class="badge badge-pill badge-outline-danger delete-quotation-history" data-code="${row.code}" href="javascript:void(0);">Delete</a>&nbsp;&nbsp;`;
+                            a += `<a class="badge badge-pill badge-outline-danger badge-medium delete-quotation-history" data-code="${row.code}" href="javascript:void(0);">Delete</a>&nbsp;&nbsp;`;
                         }
-                        a += `<a class="badge badge-pill badge-outline-info view-quotation-history" data-code="${row.code}" href="javascript:void(0);">Quotation History</a>`;
+                        a += `<a class="badge badge-pill badge-outline-info badge-medium view-quotation-history" data-code="${row.code}" href="javascript:void(0);">Quotation History</a>`;
 
                         return a;
                     }
