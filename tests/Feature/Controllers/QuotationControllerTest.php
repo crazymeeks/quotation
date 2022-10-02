@@ -73,6 +73,34 @@ class QuotationControllerTest extends TestCase
 
     }
 
+    /** @dataProvider data */
+    public function testShouldUpdateCustomerOfExistingQuote(array $data)
+    {
+        $customer = Customer::factory()->create([
+            'customer_name' => $data['customer'],
+        ]);
+        
+        $product = Product::factory()->create();
+        $quotation = Quotation::factory()->create();
+        QuotationProduct::factory()->create([
+            'quotation_id' => $quotation->id,
+        ]);
+
+        $data['id'] = $quotation->id;
+
+        $response = $this->json('POST', route('admin.quotation.post.save'), $data);
+        
+        $this->assertEquals("Quotation successfully saved.", $response->original['message']);
+
+        $this->assertDatabaseHas('quotations', [
+            'customer_id' => $customer->id
+        ]);
+
+        $this->assertDatabaseHas('quotation_products', [
+            'product_name' => $product->name
+        ]);
+    }
+
     /**
      * Undocumented function
      *
@@ -89,7 +117,7 @@ class QuotationControllerTest extends TestCase
         ];
 
         $response = $this->json('POST', route('admin.quotation.product.add.post'), $request);
-
+        
         $this->assertArrayHasKey('html', $response);
     }
 
@@ -130,7 +158,7 @@ class QuotationControllerTest extends TestCase
             'quantity' => 10,
         ];
         $response = $this->json('PUT', route('admin.quotation.product.update.quantity'), $request);
-
+        
         $this->assertTrue(str_contains($response->original['html'], 'PHP 160,000.00'));
     }
 
@@ -187,6 +215,7 @@ class QuotationControllerTest extends TestCase
         QuoteProduct::factory()->create();
 
         $this->json('POST', route('admin.quotation.post.convert.to.order'), $data);
+        
         $this->assertDatabaseHas('order_products', [
             'final_price' => 16000
         ]);
@@ -208,7 +237,8 @@ class QuotationControllerTest extends TestCase
             'id' => $quotation->id,
         ];
 
-        $this->json('POST', route('admin.quotation.post.convert.to.order'), $data);
+        $response = $this->json('POST', route('admin.quotation.post.convert.to.order'), $data);
+        
         $this->assertDatabaseHas('order_products', [
             'final_price' => 100
         ]);
@@ -227,6 +257,7 @@ class QuotationControllerTest extends TestCase
         Quotation::factory()->create();
         QuotationProduct::factory()->create();
         $response = $this->json('GET', route('admin.quotation.get.datatable'), $dataTableRequest);
+        
         $response->assertJsonStructure([
             'draw',
             'recordsTotal',
@@ -240,7 +271,7 @@ class QuotationControllerTest extends TestCase
                     'code',
                     'percent_discount',
                     'status',
-                    'customer_name'
+                    'customer'
                 ]
             ]
         ]);

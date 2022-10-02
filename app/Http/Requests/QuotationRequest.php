@@ -32,9 +32,9 @@ class QuotationRequest extends FormRequest
             unset($rules['customer']);
         }
 
-        if ($this->has('id')) {
-            $rules = [];
-        }
+        // if ($this->has('id')) {
+        //     $rules = [];
+        // }
         return $rules;
     }
 }

@@ -183,10 +183,14 @@ class QuotationController extends Controller
      */
     public function postSave(QuotationRequest $request)
     {
-        $quoteProduct = QuoteProduct::count();
-        if ($quoteProduct <= 0) {
-            return response()->json(['message' => 'Please add product!'], 403);
+        
+        if (!$request->has('id')) {
+            $quoteProduct = QuoteProduct::count();
+            if ($quoteProduct <= 0) {
+                return response()->json(['message' => 'Please add product!'], 403);
+            }
         }
+        
         try {
             $this->saveQuotation($request);
             $request->session()->forget('quote_code');
@@ -201,30 +205,56 @@ class QuotationController extends Controller
     /**
      * Save quotation
      *
-     * @param \App\Http\Requests\QuotationRequest $request
+     * @param \App\Http\Requests\QuotationRequest|\Illuminate\Http\Request $request
      * 
      * @return \App\Models\Quotation
      */
-    protected function saveQuotation(QuotationRequest $request)
+    protected function saveQuotation($request)
     {
-        $quoteCode = QuoteCode::first();
+        $quoteCode = $this->getQuoteCode($request);
+
         $customer = $this->getCustomer($request);
         $quotation = DB::transaction(function() use ($request, $customer, $quoteCode) {
-            $quote = Quotation::create([
-                'customer_id' => $customer->id,
-                'user_id' => $request->user->id,
-                'uuid' => generateUuid(),
-                'code' => $quoteCode->code,
-                'percent_discount' => $request->discount,
-                'status' => $request->has('status') ? $request->status : Quotation::PENDING,
-            ]);
-
-            $this->createQuotation($quote, $request);
+            if ($request->has('id')) {
+                $quote = Quotation::find($request->id);
+                $quote->customer_id = $customer->id;
+                $quote->user_id = $request->user->id;
+                $quote->percent_discount = $request->discount;
+                $quote->save();
+            } else {
+                $quote = Quotation::create([
+                    'customer_id' => $customer->id,
+                    'user_id' => $request->user->id,
+                    'uuid' => generateUuid(),
+                    'code' => $quoteCode->code,
+                    'percent_discount' => $request->discount,
+                    'status' => $request->has('status') ? $request->status : Quotation::PENDING,
+                ]);
+    
+                $this->createQuotation($quote, $request);
+            }
             return $quote;
         });
         
         QuoteProduct::truncate();
 
+        return $quotation;
+    }
+
+    /**
+     * Get quotation code
+     *
+     * @param \App\Http\Requests\QuotationRequest|\Illuminate\Http\Request $request
+     * 
+     * @return mixed
+     */
+    protected function getQuoteCode($request)
+    {
+        if ($request->has('id')) {
+            $quotation = Quotation::find($request->id);
+        } else {
+            $quotation = QuoteCode::first();
+        }
         return $quotation;
     }
 
@@ -318,15 +348,21 @@ class QuotationController extends Controller
     /**
      * Create or get existing customer
      *
-     * @param \App\Http\Requests\QuotationRequest $request
+     * @param \App\Http\Requests\QuotationRequest|\Illuminate\Http\Request $request
      * 
      * @return \App\Models\Customer
      */
-    protected function getCustomer(QuotationRequest $request)
+    protected function getCustomer($request)
     {
+        $customer = null;
         if ($request->has('customer_id')) {
             $customer = Customer::find($request->customer_id);
-        } else {
+        } elseif ($request->has('id')) {
+            // editing existing customer quote
+            $customer = Customer::where('customer_name', $request->customer)->first();
+        }
+        
+        if ($customer === null) {
             $customer = Customer::create([
                 'uuid' => generateUuid(),
                 'customer_name' => $request->customer,
@@ -360,8 +396,9 @@ class QuotationController extends Controller
             QuoteProduct::updateOrCreate(['product_id' => $product->id], [
                 'quantity' => $request->quantity
             ]);
-
-            $html = $this->getQuoteHtml($request);
+            $quotation = new stdClass();
+            $quotation->status = null;
+            $html = $this->getQuoteHtml($request, $quotation);
 
             return response()->json(['html' => $html]);
         }
@@ -392,11 +429,11 @@ class QuotationController extends Controller
      * Get quote html tempalte
      *
      * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Quotation $quotation
+     * @param \App\Models\Quotation|\stdClass $quotation
      * 
      * @return string
      */
-    protected function getQuoteHtml(Request $request, Quotation $quotation = null)
+    protected function getQuoteHtml(Request $request, $quotation = null)
     {
         $quoteProducts = $this->getQuoteProducts();
         if ($quotation instanceof Quotation) {
@@ -407,6 +444,7 @@ class QuotationController extends Controller
         $html = view('admin.pages.quotation.quote-details-products', [
             'quoteProducts' => $quoteProducts,
             'discount' => $request->has('discount') ? $request->discount : 0,
+            'quotation' => $quotation,
         ])->render();
         
         return $html;
@@ -474,8 +512,12 @@ class QuotationController extends Controller
             'id' => 'required',
             'quantity' => 'required'
         ]);
-        $quotation = null;
+
+        $quotation = new stdClass();
+        $quotation->status = null;
+        
         $quoteProduct = QuoteProduct::whereId($request->id)->first();
+        
         if ($quoteProduct === null) {
             // we are on edit existing quotation, therefore
             // find quotation products in quotation_products table
@@ -542,11 +584,11 @@ class QuotationController extends Controller
     /**
      * Convert quote to order
      *
-     * @param \App\Http\Requests\QuotationRequest $request
+     * @param \Illuminate\Http\Request $request
      * 
      * @return \Illuminate\Http\JsonResponse
      */
-    public function postConvertToOrder(QuotationRequest $request)
+    public function postConvertToOrder(Request $request)
     {
         try {
             
@@ -560,6 +602,7 @@ class QuotationController extends Controller
                     $this->createOrder($quotation, $items);
                 });
             } else {
+                
                 $request->merge([
                     'status' => Quotation::CONVERTED
                 ]);
