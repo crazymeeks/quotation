@@ -21,10 +21,10 @@ class DatabaseSeeder extends Seeder
 
         $adminRole = Role::factory()->create();
         $userInRole = Role::factory()->create([
-            'title' => 'UserIn'
+            'title' => Role::USERIN_ROLE
         ]);
         $userOutRole = Role::factory()->create([
-            'title' => 'UserOut'
+            'title' => Role::USEROUT_ROLE
         ]);
 
         User::factory()->create([
@@ -38,14 +38,14 @@ class DatabaseSeeder extends Seeder
             'deactivated_at' => null,
         ]);
         
-        Customer::factory()->create();
-        Customer::factory()->create([
-            'customer_name' => 'Jane Doe',
-        ]);
+        // Customer::factory()->create();
+        // Customer::factory()->create([
+        //     'customer_name' => 'Jane Doe',
+        // ]);
 
-        Customer::factory()->create([
-            'customer_name' => 'Samuel Austin',
-        ]);
+        // Customer::factory()->create([
+        //     'customer_name' => 'Samuel Austin',
+        // ]);
 
     }
 }

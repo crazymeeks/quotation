@@ -55,6 +55,9 @@ class ProductController extends Controller
                     unset($values['uuid']);
                     $message = 'Product successfully updated!';
                 }
+                $values['company_id'] = $values['company'];
+                $values['unit_of_measure_id'] = $values['unit_of_measure'];
+                unset($values['company'], $values['unit_of_measure']);
 
                 Product::updateOrCreate(
                     ['id' => $request->id],

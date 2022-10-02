@@ -45,6 +45,12 @@
 .quote-footer__convertbtn > button {
     float: right;
 }
+#customer:valid {
+    text-transform: uppercase;
+}
+#address:valid {
+    text-transform: uppercase;
+}
 </style>
 @endsection
 @section('content')
@@ -133,13 +139,13 @@
         $('.typeahead').on('keyup', func);
 
         // uppercasing input values
-        $('#customer').on('keyup', function(evt){
-            $(this).val($(this).val().toUpperCase());
-        });
+        // $('#customer').on('keyup', function(evt){
+        //     $(this).val($(this).val().toUpperCase());
+        // });
 
-        $('#address').on('keyup', function(evt){
-            $(this).val($(this).val().toUpperCase());
-        });
+        // $('#address').on('keyup', function(evt){
+        //     $(this).val($(this).val().toUpperCase());
+        // });
         
 
         $('.autocomplete-items').on('click', '.item', function(evt){
@@ -231,6 +237,7 @@
                 },
                 error: function(xhr, status, thrown){
                     const response = xhr.responseJSON;
+                    console.log('error', xhr);
                     const {message} = response;
                     toastr.error(message);
                 }

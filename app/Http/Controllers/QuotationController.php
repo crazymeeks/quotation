@@ -74,7 +74,8 @@ class QuotationController extends Controller
             'code' => $quoteCode->code,
             'products' => $products,
             'quoteProducts' => $quoteProducts,
-            'quotation' => $quotation
+            'quotation' => $quotation,
+            'discount' => $quotation->percent_discount,
         ]);
     }
 
@@ -90,7 +91,7 @@ class QuotationController extends Controller
         $quotation = Quotation::with(['customer'])->whereUuid($uuid)->first();
         $products = Product::active()->get();
         $productQuotations = $this->getRestructuredProductQuotation($quotation);
-        
+            
         return view('admin.pages.quotation.form', [
             'code' => $quotation->code,
             'products' => $products,
@@ -436,6 +437,7 @@ class QuotationController extends Controller
     protected function getQuoteHtml(Request $request, $quotation = null)
     {
         $quoteProducts = $this->getQuoteProducts();
+        
         if ($quotation instanceof Quotation) {
             $quoteProducts = json_decode(json_encode($this->getRestructuredProductQuotation($quotation)));
             
@@ -463,7 +465,10 @@ class QuotationController extends Controller
             'discount' => 'required'
         ]);
 
-        $html = $this->getQuoteHtml($request);
+        $std = new stdClass();
+        $std->status = null;
+
+        $html = $this->getQuoteHtml($request, $std);
 
         return response()->json([
             'html' => $html

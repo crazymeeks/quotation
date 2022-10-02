@@ -92,11 +92,9 @@
                     searchable: false,
                     orderable: false,
                     render: function(data, type, row, meta){
-                        let buttons = `<a style="color: #33cdff;" href="/products/edit/${row.uuid}"><i class="dripicons-document-edit"></i></a>`;;
-                        buttons += `&nbsp;&nbsp;&nbsp;&nbsp;`;
-                        buttons += `<a style="color: red;" href="javascript:void(0);" data-id="${row.id}" class="icon-delete"><i class="far fa-times-circle"></i></a>`;;
-                        
-                        return buttons;
+                        let a = `<a class="badge badge-pill badge-outline-primary" href="/products/edit/${row.uuid}">View</a>&nbsp;&nbsp;`;
+                        a += `<a class="badge badge-pill badge-outline-danger icon-delete" class="icon-delete" data-id="${row.id}" href="javascript:void(0);">Delete</a>&nbsp;&nbsp;`;
+                        return a;
                     }
                 },
     
