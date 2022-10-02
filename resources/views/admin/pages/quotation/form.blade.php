@@ -131,6 +131,15 @@
 
 
         $('.typeahead').on('keyup', func);
+
+        // uppercasing input values
+        $('#customer').on('keyup', function(evt){
+            $(this).val($(this).val().toUpperCase());
+        });
+
+        $('#address').on('keyup', function(evt){
+            $(this).val($(this).val().toUpperCase());
+        });
         
 
         $('.autocomplete-items').on('click', '.item', function(evt){
@@ -200,12 +209,13 @@
                 contact_no: $('#contact_no').val(),
                 discount: parseFloat(discount),
                 code: $('#code').val(),
+                customer: $('#customer').val(),
             };
 
-            if (customerId) {
+            if ($('#id').length > 0) {
+                data.id = $('#id').val();
+            } else if(customerId) {
                 data.customer_id = customerId;
-            } else {
-                data.customer = $('#customer').val();
             }
 
             $.ajax({
@@ -331,6 +341,8 @@
             });
             
         });
+
+        
 
         function drawQuoteItemsHtml(html) {
             $('#quote-table').html(html);

@@ -365,8 +365,8 @@ class QuotationController extends Controller
         if ($customer === null) {
             $customer = Customer::create([
                 'uuid' => generateUuid(),
-                'customer_name' => $request->customer,
-                'address' => $request->address,
+                'customer_name' => strtoupper($request->customer),
+                'address' => strtoupper($request->address),
                 'contact_no' => $request->contact_no,
             ]);
         }
