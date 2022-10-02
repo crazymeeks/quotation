@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CustomerController;
@@ -62,7 +63,12 @@ Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
         $route->delete('/', [RoleController::class, 'deleteRole'])->name('admin.role.delete');
     });
 
-    /** Quotation */
+    /** Orders */
+    $route->group(['prefix' => 'orders'], function($route){
+        $route->get('/', [OrderController::class, 'index'])->name('admin.orders.get.index');
+        $route->get('/datatable', [OrderController::class, 'getDataTable'])->name('admin.orders.get.datatable');
+    });
+    /** Quotations */
     $route->group(['prefix' => 'quotations'], function($route){
         $route->get('/', [QuotationController::class, 'index'])->name('admin.quotation.index');
         $route->post('/', [QuotationController::class, 'postSave'])->name('admin.quotation.post.save');

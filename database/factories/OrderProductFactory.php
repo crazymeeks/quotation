@@ -19,6 +19,7 @@ class OrderProductFactory extends Factory
         return [
             'order_id' => 1,
             'product_uuid' => generateUuid(),
+            'uuid' => generateUuid(),
             'unit_of_measure' => 1,
             'company' => 'Company A',
             'product_name' => 'Product A',
@@ -26,6 +27,7 @@ class OrderProductFactory extends Factory
             'purchase_description' => 'Purchase description A',
             'sales_description' => 'Sales description A',
             'price' => 100,
+            'quantity' => 1,
             'percent_discount' => 0.00,
             'final_price' => 100,
         ];

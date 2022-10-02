@@ -39,7 +39,7 @@
                                 <a href="{{route('admin.quotation.index')}}" class="waves-effect"><i class="fas fa-users-cog"></i> <span> Quotations </span></a>
                             </li>
                             <li>
-                                <a href="javascript:void(0);" class="waves-effect"><i class="far fa-money-bill-alt"></i><span> Orders </span></a>
+                                <a href="{{route('admin.orders.get.index')}}" class="waves-effect"><i class="far fa-money-bill-alt"></i><span> Orders </span></a>
                             </li>
                             <li>
                                 <a href="{{route('admin.role.get.index')}}" class="waves-effect"><i class="fas fa-gavel"></i> <span> Roles </span></a>
