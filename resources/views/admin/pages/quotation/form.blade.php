@@ -19,7 +19,7 @@
 .autocomplete-items {
     font-size: 17px;
     background: #fff;
-    width: 96%;
+    width: 97.5%;
     position: absolute;
     z-index: 1000;
 }
@@ -29,6 +29,7 @@
 }
 .autocomplete-items div {
     border: 1px solid #d4d4d4;
+    background-color: #AEE4F1;
 }
 
 #product-list-modal-table > tbody > tr {
@@ -112,6 +113,8 @@
 
         let func = debounce((e) => {
             let value = e.currentTarget.value;
+            $('#address').prop('readonly', false);
+            $('#contact_no').prop('readonly', false);
             if (!value) {
                 hideItems();
                 customerId = null;
@@ -126,7 +129,7 @@
                         const {results} = response;
                         let html = '';
                         for(let i = 0; i < results.length; i++){
-                            html += `<div data-id="${results[i].id}" data-value="${results[i].customer_name}" class="item">${results[i].customer_name}</div>`;
+                            html += `<div data-id="${results[i].id}" data-contact="${results[i].contact_no}" data-address="${results[i].address}" data-value="${results[i].customer_name}" class="item">${results[i].customer_name}</div>`;
                         }
                         $('.autocomplete-items').html(html);
                     }
@@ -140,8 +143,14 @@
 
         $('.autocomplete-items').on('click', '.item', function(evt){
             let value = $(this).data('value');
+            let address = $(this).data('address');
+            let contact = $(this).data('contact');
             customerId = $(this).data('id');
             $('#customer').val(value);
+            $('#address').val(address);
+            $('#address').prop('readonly', true);
+            $('#contact_no').val(contact);
+            $('#contact_no').prop('readonly', true);
             hideItems();
         });
 
@@ -151,6 +160,7 @@
         });
 
         function hideItems(){
+            
             $('.autocomplete-items').html('');
         }
 

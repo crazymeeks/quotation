@@ -6,13 +6,12 @@
                 <!-- LOGO -->
                 <div class="topbar-left">
                     <div class="text-center bg-logo">
-                        <a href="index.html" class="logo"><i class="mdi mdi-bowling text-success"></i> INVENTORY</a>
-                        <!-- <a href="index.html" class="logo"><img src="assets/images/logo.png" height="24" alt="logo"></a> -->
+                        <a href="/home" class="logo"><i class="mdi mdi-bowling text-success"></i> AURORA PHILS. INC</a>
                     </div>
                 </div>
                 <div class="sidebar-user">
                     <img src="/assets/images/users/avatar-6.jpg" alt="user" class="rounded-circle img-thumbnail mb-1">
-                    <h6 class="">Shay </h6> 
+                    <h6 class="">{{session()->get('auth')->firstname}} </h6> 
                     <p class=" online-icon text-dark"><i class="mdi mdi-record text-success"></i>online</p>                    
                 </div>
 
@@ -30,8 +29,12 @@
                             </li>
 
                             <li>
-                                <a href="javascript:void(0);" class="waves-effect"><i class="dripicons-user"></i> <span> Customers </span> <span class="float-right"></span></a>
+                                <a href="{{route('admin.customer.index')}}" class="waves-effect"><i class="dripicons-user"></i> <span> Customers </span> <span class="float-right"></span></a>
                             </li>
+                            <li>
+                                <a href="{{route('admin.company.index')}}" class="waves-effect"><i class="fas fa-building"></i> <span> Companies </span> <span class="float-right"></span></a>
+                            </li>
+                            
                             <li>
                                 <a href="{{route('product.index')}}" class="waves-effect"><i class="dripicons-stack"></i><span> Products</a>
                             </li>

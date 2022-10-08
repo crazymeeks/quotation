@@ -12,6 +12,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\UnitOfMeasureController;
 use App\Http\Controllers\QuotationHistoryController;
+use App\Models\Customer;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +26,7 @@ use App\Http\Controllers\QuotationHistoryController;
 */
 Route::get('/', [LoginController::class, 'index'])->name('login');
 Route::post('/login', [LoginController::class, 'postLogin'])->name('admin.post.login');
+Route::post('/logout', [LoginController::class, 'postLogout'])->name('admin.post.logout');
 
 
 Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
@@ -44,8 +46,22 @@ Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
 
     /** Company */
     $route->group(['prefix' => 'companies'], function($route){
+        $route->get('/', [CompanyController::class, 'index'])->name('admin.company.index');
         $route->post('/', [CompanyController::class, 'postSave'])->name('admin.company.post.save');
         $route->delete('/', [CompanyController::class, 'deleteCompany'])->name('admin.company.delete');
+        $route->get('/add-new', [CompanyController::class, 'showAddNewPage'])->name('admin.company.add.new');
+        $route->get('/edit/{uuid}', [CompanyController::class, 'editCompanyPage'])->name('admin.company.edit');
+
+        $route->post('/validate', [CompanyController::class, 'postValidate'])->name('admin.company.post.validate');
+
+        $route->get('/datatable', [CompanyController::class, 'getDatatable'])->name('admin.company.datatable');
+    });
+
+    /** Customer */
+    $route->group(['prefix' => 'customers'], function($route){
+        $route->get('/', [CustomerController::class, 'index'])->name('admin.customer.index');
+        
+        $route->get('/datatable', [CustomerController::class, 'getDatatable'])->name('admin.customer.datatable');
     });
 
     /** Unit of measure */

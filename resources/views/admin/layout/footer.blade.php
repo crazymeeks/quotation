@@ -23,6 +23,17 @@
                 }
             });
 
+
+            $('#logout').on('click', function(){
+                $.ajax({
+                    url: "{{route('admin.post.logout')}}",
+                    method: "POST",
+                    success: function(response){
+                        window.location.href = "{{route('login')}}";
+                    }
+                });
+            });
+
             // Returns a function, that, as long as it continues to be invoked, will not
             // be triggered. The function will be called after it stops being called for
             // `wait` milliseconds.

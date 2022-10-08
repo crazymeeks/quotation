@@ -28,7 +28,7 @@
 
 
                     <div class="p-3">
-                        <form class="form-horizontal m-t-20" method="POST" action="{{route('admin.post.login')}}">
+                        <form class="form-horizontal m-t-20" autocomplete="off" method="POST" action="{{route('admin.post.login')}}">
                             @csrf
 
                             <div class="form-group row">

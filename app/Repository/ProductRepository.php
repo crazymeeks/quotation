@@ -45,6 +45,34 @@ class ProductRepository
     {
         $limit = $request->length;
         $offset = $request->start;
+
+        $order = $request->order;
+        $columns = $request->columns;
+
+        $column_idx = $order[0]['column'];
+        $column = $columns[$column_idx]['data'];
+
+        $column = $this->mapColumn($column);
+        
+        $orderDirection = $order[0]['dir'];
+
+        $total = $this->getBaseTable()
+                       ->where(function($query) use ($request) {
+                            $search = $request->search['value'];
+                            if (!empty($search)) {
+                                return $query->where('products.name', 'like', '%' . $search . '%')
+                                      ->orWhere('products.cost', 'like', '%' . $search . '%')
+                                      ->orWhere('products.percent_discount', 'like', '%' . $search . '%')
+                                      ->orWhere('products.inventory', 'like', '%' . $search . '%')
+                                      ->orWhere('unit_of_measures.title', 'like', '%' . $search . '%')
+                                      ->orWhere('companies.name', 'like', '%' . $search . '%');
+                            }
+                       })
+                       ->whereNull('products.deleted_at')
+                       ->count();
+
+
+
         $products = $this->getBaseTable()
                        ->where(function($query) use ($request) {
                             $search = $request->search['value'];
@@ -60,12 +88,13 @@ class ProductRepository
                        ->whereNull('products.deleted_at')
                        ->limit($limit)
                        ->offset($offset)
+                       ->orderBy($column, $orderDirection)
                        ->get();
         
         
         $logs = $products->toArray();
         
-        $totalRecords = count($logs);
+        $totalRecords = $total;
         $data = [
             'draw' => $request->draw,
             'recordsTotal' => $totalRecords,
@@ -74,5 +103,21 @@ class ProductRepository
         ];
 
         return $data;
+    }
+
+
+    protected function mapColumn(string $column)
+    {
+        $columns = [
+            'name' => 'products.name',
+            'cost' => 'products.cost',
+            'inventory' => 'products.inventory',
+            'percent_discount' => 'products.percent_discount',
+            'measure' => 'unit_of_measures.title',
+            'company_name' => 'companies.name',
+            'status' => 'products.status',
+        ];
+
+        return $columns[$column];
     }
 }

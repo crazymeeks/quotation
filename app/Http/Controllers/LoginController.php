@@ -14,6 +14,11 @@ class LoginController extends Controller
         return view('admin.pages.login.index');
     }
 
+    public function postLogout(Request $request)
+    {
+        $request->session()->forget('auth');
+    }
+
     /**
      * Login
      *
