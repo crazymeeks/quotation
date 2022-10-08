@@ -83,6 +83,7 @@ Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
     $route->group(['prefix' => 'orders'], function($route){
         $route->get('/', [OrderController::class, 'index'])->name('admin.orders.get.index');
         $route->get('/datatable', [OrderController::class, 'getDataTable'])->name('admin.orders.get.datatable');
+        $route->get('/{uuid}/view', [OrderController::class, 'viewOrder'])->name('admin.orders.get.view');
     });
     /** Quotations */
     $route->group(['prefix' => 'quotations'], function($route){

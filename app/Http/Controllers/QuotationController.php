@@ -630,7 +630,6 @@ class QuotationController extends Controller
                 ]);
                 DB::transaction(function() use ($request) {
                     $quotation = $this->saveQuotation($request);
-                    
                     $this->createOrder($quotation, $this->items);
                 });
                 

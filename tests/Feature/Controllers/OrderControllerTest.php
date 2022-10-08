@@ -9,12 +9,15 @@ use App\Models\OrderProduct;
 
 class OrderControllerTest extends TestCase
 {
+
+    protected $order;
+
     public function setUp(): void
     {
         parent::setUp();
         $this->authenticateAsUserIn();
         Customer::factory()->create();
-        Order::factory()->create();
+        $this->order = Order::factory()->create();
         OrderProduct::factory()->create();
     }
 
@@ -40,6 +43,38 @@ class OrderControllerTest extends TestCase
                 ]
             ],
         ]);
+    }
+
+
+    public function testViewOrder()
+    {
+        $response = $this->json('GET', route('admin.orders.get.view', ['uuid' => $this->order->uuid]));
+
+        $response->assertJsonStructure([
+            'order' => [
+                'customer' => [
+                    'name',
+                    'contact',
+                    'address',
+                ],
+                'order' => [
+                    'reference_no',
+                    'status',
+                    'discount',
+                    'grand_total',
+                ],
+                'items' => [
+                    [
+                        'name',
+                        'price',
+                        'final_price',
+                        'quantity',
+                        'unit_of_measure'
+                    ]
+                ]
+            ]
+        ]);
+        
     }
 
 

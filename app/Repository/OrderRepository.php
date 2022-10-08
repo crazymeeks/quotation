@@ -19,10 +19,71 @@ class OrderRepository
         $builder = DB::table('orders')
                      ->select(
                         'orders.*',
-                        'customers.customer_name as customer'
+                        'customers.customer_name as customer',
+                        'customers.contact_no as customer_contact',
+                        'customers.address as customer_address',
+                        'order_products.product_uuid',
+                        'order_products.unit_of_measure',
+                        'order_products.company',
+                        'order_products.product_name',
+                        'order_products.manufacturer_part_number',
+                        'order_products.purchase_description',
+                        'order_products.sales_description',
+                        'order_products.price',
+                        'order_products.quantity',
+                        'order_products.final_price'
                      )
-                     ->leftJoin('customers', 'orders.customer_id', '=', 'customers.id');
+                     ->leftJoin('customers', 'orders.customer_id', '=', 'customers.id')
+                     ->leftJoin('order_products', 'orders.id', '=', 'order_products.order_id');
         return $builder;
+    }
+
+    /**
+     * Get order products by uuid
+     *
+     * @param string $uuid
+     * 
+     * @return array
+     */
+    public function getOrderProducts(string $uuid)
+    {
+        $order = $this->getBaseTable()
+                      ->where('orders.uuid', $uuid)
+                      ->get();
+        
+        $data = [
+            'customer' => null,
+            'order' => null,
+            'items' => null
+        ];
+
+        foreach($order as $o){
+            if ($data['customer'] === null) {
+                $data['customer'] = [
+                    'name' => $o->customer,
+                    'contact' => $o->customer_contact,
+                    'address' => $o->customer_address,
+                ];
+            }
+            if ($data['order'] === null) {
+                $data['order'] = [
+                    'reference_no' => $o->reference_no,
+                    'status' => $o->status,
+                    'discount' => $o->percent_discount,
+                    'grand_total' => $o->grand_total,
+                ];
+            }
+
+            $data['items'][] = [
+                'name' => $o->product_name,
+                'price' => $o->price,
+                'final_price' => $o->final_price,
+                'quantity' => $o->quantity,
+                'unit_of_measure' => $o->unit_of_measure,
+            ];
+        }
+
+        return json_decode(json_encode($data));
     }
 
     /**
