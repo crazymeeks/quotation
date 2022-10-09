@@ -69,7 +69,8 @@ class OrderControllerTest extends TestCase
                         'price',
                         'final_price',
                         'quantity',
-                        'unit_of_measure'
+                        'unit_of_measure',
+                        'company'
                     ]
                 ]
             ]

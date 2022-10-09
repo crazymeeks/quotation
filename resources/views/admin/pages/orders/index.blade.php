@@ -25,8 +25,8 @@
                         <tr>
                             <th>Reference #</th>
                             <th>Customer</th>
-                            <th>Grand Total</th>
-                            <th>Percent Discount</th>
+                            <!-- <th>Grand Total</th> -->
+                            <!-- <th>Percent Discount</th> -->
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -75,14 +75,14 @@
             columns: [
                 {data: 'reference_no'},
                 {data: 'customer'},
-                {data: 'grand_total'},
-                {data: 'percent_discount'},
+                // {data: 'grand_total'},
+                // {data: 'percent_discount'},
                 {data: 'status'},
                 {data: 'id'},
             ],
             columnDefs: [
                 {
-                    targets: [4],
+                    targets: [2],
                     searchable: true,
                     orderable: true,
                     render: function(data, type, row, meta){
@@ -96,11 +96,11 @@
                     }
                 },
                 {
-                    targets: [5],
+                    targets: [3],
                     searchable: false,
                     orderable: false,
                     render: function(data, type, row, meta){
-                        let a = `<a class="badge badge-pill badge-outline-primary badge-medium" href="/quotations/${row.uuid}/edit">View</a>&nbsp;&nbsp;`;
+                        let a = `<a class="badge badge-pill badge-outline-primary badge-medium" href="/orders/${row.uuid}/view">View</a>&nbsp;&nbsp;`;
                         
                         return a;
                     }

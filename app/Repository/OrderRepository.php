@@ -54,7 +54,7 @@ class OrderRepository
         $data = [
             'customer' => null,
             'order' => null,
-            'items' => null
+            'items' => []
         ];
 
         foreach($order as $o){
@@ -80,6 +80,7 @@ class OrderRepository
                 'final_price' => $o->final_price,
                 'quantity' => $o->quantity,
                 'unit_of_measure' => $o->unit_of_measure,
+                'company' => $o->company,
             ];
         }
 
@@ -108,6 +109,19 @@ class OrderRepository
         
         $orderDirection = $order[0]['dir'];
 
+
+        $total = $this->getBaseTable()
+                           ->where(function($query) use ($request) {
+                                $search = $request->search['value'];
+                                if (!empty($search)) {
+                                    return $query->where('orders.reference_no', 'like', '%' . $search . '%')
+                                                 ->orWhere('customers.customer_name', 'like', '%' . $search . '%')
+                                                 ->orWhere('orders.status', 'like', '%' . $search . '%');
+                                }
+                           })
+                           ->orderBy($column, $orderDirection)
+                           ->count();
+
         $quotations = $this->getBaseTable()
                            ->where(function($query) use ($request) {
                                 $search = $request->search['value'];
@@ -123,8 +137,8 @@ class OrderRepository
                            ->get();
 
         $quotations = $quotations->toArray();
-
-        $totalRecords = count($quotations);
+        
+        $totalRecords = $total;
         $data = [
             'draw' => $request->draw,
             'recordsTotal' => $totalRecords,

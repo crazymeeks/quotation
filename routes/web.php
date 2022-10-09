@@ -24,6 +24,10 @@ use App\Models\Customer;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/q', function(){
+    return view('templates.quote-pdf');
+});
+
 Route::get('/', [LoginController::class, 'index'])->name('login');
 Route::post('/login', [LoginController::class, 'postLogin'])->name('admin.post.login');
 Route::post('/logout', [LoginController::class, 'postLogout'])->name('admin.post.logout');
