@@ -30,9 +30,9 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'role_id' => $adminRole->id,
             'uuid' => generateUuid(),
-            'firstname' => 'Richarch',
-            'lastname' => 'Hendricks',
-            'username' => 'rhendricks',
+            'firstname' => 'Admin',
+            'lastname' => 'admin',
+            'username' => 'admin',
             'password' => bcrypt('password'),
             'deleted_at' => null,
             'deactivated_at' => null,

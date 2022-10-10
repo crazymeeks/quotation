@@ -325,7 +325,13 @@
 
         // Convert quotation to order
         $('body').on('click', '#btn-convert-to-order', function(e){
-            let data = {};
+            let data = {
+                discount: discount,
+                customer: $('#customer').val(),
+                address: $('#address').val(),
+                contact_no: $('#contact_no').val(),
+
+            };
             if ($('#id').length > 0) {
                 data.id = $('#id').val();
             }
@@ -347,6 +353,9 @@
                             const {html} = response;
                             drawQuoteItemsHtml(html);
                             toastr.success("Quote has been converted to order successfully.");
+                            setTimeout(() => {
+                                window.location.href = "{{route('admin.quotation.index')}}";
+                            }, 1000);
                         }
                     });
                 }

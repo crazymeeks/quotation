@@ -195,6 +195,7 @@ class QuotationController extends Controller
         
         try {
             $this->saveQuotation($request);
+            QuoteProduct::truncate();
             $request->session()->forget('quote_code');
             return response()->json(['message' => 'Quotation successfully saved.']);
         } catch (Exception $e) {
@@ -236,8 +237,6 @@ class QuotationController extends Controller
             $this->createQuotation($quote, $request);
             return $quote;
         });
-        
-        QuoteProduct::truncate();
 
         return $quotation;
     }
@@ -633,6 +632,8 @@ class QuotationController extends Controller
                     $quotation = $this->saveQuotation($request);
                     $this->createOrder($quotation, $this->items);
                 });
+
+                QuoteProduct::truncate();
                 
             }
             return response()->json(['message' => 'Order has been created!']);        
