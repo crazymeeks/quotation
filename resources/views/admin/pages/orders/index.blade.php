@@ -88,7 +88,7 @@
                     render: function(data, type, row, meta){
                         let status = row.status;
                         let css_class = 'badge-warning';
-                        if (status == 'converted to order') {
+                        if (status == 'paid') {
                             css_class = 'badge-success';
                         }
 
