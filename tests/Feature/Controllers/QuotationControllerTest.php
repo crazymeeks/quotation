@@ -276,6 +276,9 @@ class QuotationControllerTest extends TestCase
         $this->assertDatabaseHas('quotations', [
             'status' => Quotation::CONVERTED
         ]);
+        $this->assertDatabaseHas('products', [
+            'inventory' => 99
+        ]);
     }
 
     public function testShouldConvertExistingQuoteToOrder()

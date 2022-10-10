@@ -67,6 +67,7 @@ class OrderRepository
             }
             if ($data['order'] === null) {
                 $data['order'] = [
+                    'uuid' => $o->uuid,
                     'reference_no' => $o->reference_no,
                     'status' => $o->status,
                     'discount' => $o->percent_discount,

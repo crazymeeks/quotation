@@ -36,6 +36,9 @@
                             </li>
                             
                             <li>
+                                <a href="{{route('admin.uom.index')}}" class="waves-effect"><i class="fas fa-ruler-horizontal"></i> <span> Unit of measures </span> <span class="float-right"></span></a>
+                            </li>
+                            <li>
                                 <a href="{{route('product.index')}}" class="waves-effect"><i class="dripicons-stack"></i><span> Products</a>
                             </li>
                             <li>

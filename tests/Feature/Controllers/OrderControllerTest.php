@@ -45,6 +45,19 @@ class OrderControllerTest extends TestCase
         ]);
     }
 
+    public function testShouldSetOrderToPaid()
+    {
+        $request = [
+            'uuid' => $this->order->uuid,
+        ];
+        $response = $this->json('PUT', route('admin.orders.post.paid'), $request);
+
+        $order = Order::first();
+        $this->assertEquals(Order::PAID, $order->status);
+        $this->assertEquals("Order successfully set to paid.", $response->original['message']);
+
+    }
+
 
     public function testViewOrder()
     {

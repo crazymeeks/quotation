@@ -31,7 +31,7 @@ class UnitOfMeasureControllerTest extends TestCase
         ]);
 
         $data['uuid'] = $uom->uuid;
-
+        
         $response = $this->json('POST', route('admin.uom.post.save'), $data);
 
         $this->assertEquals('Unit of measure successfully saved.', $response->original['message']);

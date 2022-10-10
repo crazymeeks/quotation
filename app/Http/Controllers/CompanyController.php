@@ -85,6 +85,13 @@ class CompanyController extends Controller
         return view('admin.pages.companies.form', ['company' => $company]);
     }
 
+    /**
+     * Edit company
+     *
+     * @param string $uuid
+     * 
+     * @return \Illuminate\View\View
+     */
     public function editCompanyPage(string $uuid)
     {
         $company = Company::whereUuid($uuid)->first();

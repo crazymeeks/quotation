@@ -14,6 +14,7 @@ class Order extends Model
     const PENDING = 'pending';
     const DELIVERED = 'delivered';
     const RETURNED = 'returned';
+    const PAID = 'paid';
 
     protected $fillable = [
         'customer_id',

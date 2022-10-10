@@ -628,6 +628,7 @@ class QuotationController extends Controller
                 $request->merge([
                     'status' => Quotation::CONVERTED
                 ]);
+                
                 DB::transaction(function() use ($request) {
                     $quotation = $this->saveQuotation($request);
                     $this->createOrder($quotation, $this->items);
@@ -652,7 +653,7 @@ class QuotationController extends Controller
      */
     protected function createOrder(Quotation $quotation, array $items)
     {
-
+        
         $total = 0;
         $items = array_map(function($item) use (&$total) {
             unset($item['quotation_id'], $item['uuid']);
@@ -680,5 +681,25 @@ class QuotationController extends Controller
         }, $items);
 
         OrderProduct::insert($items);
+        
+        $this->decreaseProductInventory($items);
+    }
+
+
+    /**
+     * Decrease inventory
+     *
+     * @param array<int, array> $items
+     * 
+     * @return void
+     */
+    protected function decreaseProductInventory(array $items)
+    {
+        foreach($items as $item){
+            /** @todo optimize this */
+            $product = Product::whereUuid($item['product_uuid'])->first();
+            $product->inventory = ((int) $product->inventory - (int)$item['quantity']);
+            $product->save();
+        }
     }
 }

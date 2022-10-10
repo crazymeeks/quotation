@@ -69,9 +69,15 @@ Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
     });
 
     /** Unit of measure */
-    $route->group(['prefix' => 'unit-of-measure'], function($route){
+    $route->group(['prefix' => 'unit-of-measures'], function($route){
+        $route->get('/', [UnitOfMeasureController::class, 'index'])->name('admin.uom.index');
         $route->post('/', [UnitOfMeasureController::class, 'postSave'])->name('admin.uom.post.save');
         $route->delete('/', [UnitOfMeasureController::class, 'deleteUom'])->name('admin.uom.delete');
+        $route->get('/add-new', [UnitOfMeasureController::class, 'showAddNewPage'])->name('admin.uom.add.new');
+        $route->get('/edit/{uuid}', [UnitOfMeasureController::class, 'editCompanyPage'])->name('admin.uom.edit');
+
+        $route->post('/validate', [UnitOfMeasureController::class, 'postValidate'])->name('admin.uom.post.validate');
+        $route->get('/datatable', [UnitOfMeasureController::class, 'getDatatable'])->name('admin.uom.datatable');
     });
 
     /** Role */
@@ -88,6 +94,7 @@ Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
         $route->get('/', [OrderController::class, 'index'])->name('admin.orders.get.index');
         $route->get('/datatable', [OrderController::class, 'getDataTable'])->name('admin.orders.get.datatable');
         $route->get('/{uuid}/view', [OrderController::class, 'viewOrder'])->name('admin.orders.get.view');
+        $route->put('/', [OrderController::class, 'putPaidOrder'])->name('admin.orders.post.paid');
     });
     /** Quotations */
     $route->group(['prefix' => 'quotations'], function($route){

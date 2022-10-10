@@ -33,10 +33,12 @@
         <div class="card">
             <div class="card-body">
                 <div class="order-section">
-                    <div class="order-number">Order #{{$order->order->reference_no}}</div>
+                    <div class="order-number {{$order->order->status === 'paid' ? 'text-success' : 'text-normal'}}">Order #{{$order->order->reference_no}}</div>
+                    @if($order->order->status === 'pending')
                     <div class="order-section--action">
-                        <button type="button" id="btn-paid-action" class="btn btn-outline-secondary waves-effect">SET THIS ORDER AS PAID</button>
+                        <button type="button" data-uuid="{{$order->order->uuid}}" id="btn-paid-action" class="btn btn-outline-secondary waves-effect">SET THIS ORDER AS PAID</button>
                     </div>
+                    @endif
                 </div>
 
                 <div class="customer-section">
@@ -123,6 +125,39 @@
     (function($){
         $('#btn-paid-action').on('click', function(e){
             
+            let uuid = $(this).data('uuid');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{route('admin.orders.post.paid')}}",
+                        method: "PUT",
+                        data: {
+                            uuid: uuid,
+                        },
+                        success: function(response){
+                            const {message} = response;
+                            toastr.success(message);
+                            setTimeout(() => {
+                                window.location.href = "{{route('admin.orders.get.index')}}";
+                            }, 1500);
+                        },
+                        error: function(xhr){
+                            const response = xhr.responseJSON;
+                            const {message} = response;
+                            toastr.error(message);
+                        }
+                    });
+                }
+            });
         });
     })(jQuery);
 </script>
