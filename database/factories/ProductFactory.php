@@ -22,6 +22,7 @@ class ProductFactory extends Factory
             'company_id' => 1,
             'uuid' => generateUuid(),
             'name' => 'Product A',
+            'area' => 'Area A',
             'manufacturer_part_number' => null,
             'purchase_description' => 'Purchase Description A',
             'sales_description' => 'Sales Description A',

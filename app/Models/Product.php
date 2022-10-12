@@ -19,6 +19,7 @@ class Product extends Model
         'company_id',
         'uuid',
         'name',
+        'area',
         'manufacturer_part_number',
         'purchase_description',
         'sales_description',

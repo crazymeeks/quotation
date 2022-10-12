@@ -115,9 +115,9 @@
             let value = e.currentTarget.value;
             $('#address').prop('readonly', false);
             $('#contact_no').prop('readonly', false);
+            customerId = null;
             if (!value) {
                 hideItems();
-                customerId = null;
             } else {
                 $.ajax({
                     url: "{{route('customer.typeahead.get')}}",

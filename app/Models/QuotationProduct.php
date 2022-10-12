@@ -16,6 +16,7 @@ class QuotationProduct extends Model
         'unit_of_measure',
         'company',
         'product_name',
+        'area',
         'manufacturer_part_number',
         'purchase_description',
         'sales_description',

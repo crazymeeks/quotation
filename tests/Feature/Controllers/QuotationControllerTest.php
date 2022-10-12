@@ -271,7 +271,8 @@ class QuotationControllerTest extends TestCase
         $this->json('POST', route('admin.quotation.post.convert.to.order'), $data);
         
         $this->assertDatabaseHas('order_products', [
-            'final_price' => 16000
+            'final_price' => 16000,
+            'area' => 'Area A',
         ]);
         $this->assertDatabaseHas('quotations', [
             'status' => Quotation::CONVERTED

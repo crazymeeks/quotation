@@ -19,6 +19,7 @@ class QuotationHistoryProduct extends Model
         'product_uuid',
         'company',
         'product_name',
+        'area',
         'unit_of_measure',
         'manufacturer_part_number',
         'purchase_description',

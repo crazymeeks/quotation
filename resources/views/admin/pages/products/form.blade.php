@@ -43,7 +43,13 @@
                             <div class="form-group row">
                                 <label for="name" class="col-sm-2 col-form-label">Product name <span class="text-danger">*</span></label>
                                 <div class="col-sm-10">
-                                    <input class="form-control" name="name" id="name" type="text" value="{{$product->name}}" placeholder="Product name here...">
+                                    <input class="form-control" name="name" id="name" type="text" value="{{$product->name}}" placeholder="Enter product name here...">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="area" class="col-sm-2 col-form-label">Area</label>
+                                <div class="col-sm-10">
+                                    <input class="form-control" name="area" id="area" type="text" value="{{$product->area}}" placeholder="Enter product area here...">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -135,6 +141,7 @@
                     unit_of_measure: $('#unit_of_measure').val(),
                     company: $('#company').val(),
                     name: $('#name').val(),
+                    area: $('#area').val(),
                     manufacturer_part_number: $('#manufacturer_part_number').val(),
                     sales_description: $('#sales_description').val(),
                     cost: $('#cost').val(),

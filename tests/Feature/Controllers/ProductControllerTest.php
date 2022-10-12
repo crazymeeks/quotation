@@ -82,7 +82,8 @@ class ProductControllerTest extends TestCase
         $response = $this->json('POST', route('product.save'), $data);
 
         $this->assertDatabaseHas('products', [
-            'name' => 'table'
+            'name' => 'table',
+            'area' => 'Area A'
         ]);
 
         $this->assertEquals('Product successfully updated!', $response->original['message']);
@@ -208,6 +209,7 @@ class ProductControllerTest extends TestCase
             'unit_of_measure' => 1,
             'company' => 1,
             'name' => 'Product A',
+            'area' => 'Area A',
             'manufacturer_part_number' => null,
             'purchase_description' => 'Purchase Description A',
             'sales_description' => 'Sales Description A',

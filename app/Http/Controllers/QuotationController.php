@@ -233,6 +233,7 @@ class QuotationController extends Controller
                     'percent_discount' => $request->discount,
                     'status' => $request->has('status') ? $request->status : Quotation::PENDING,
                 ]);
+                
             }
             $this->createQuotation($quote, $request);
             return $quote;
@@ -281,6 +282,7 @@ class QuotationController extends Controller
                 'unit_of_measure' => $product->uom,
                 'company' => $product->company_name,
                 'product_name' => $product->name,
+                'area' => $product->area,
                 'manufacturer_part_number' => $product->manufacturer_part_number,
                 'purchase_description' => $product->purchase_description,
                 'sales_description' => $product->sales_description,
@@ -627,8 +629,8 @@ class QuotationController extends Controller
                 $request->merge([
                     'status' => Quotation::CONVERTED
                 ]);
-                
                 DB::transaction(function() use ($request) {
+                    
                     $quotation = $this->saveQuotation($request);
                     $this->createOrder($quotation, $this->items);
                 });

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('product_uuid', 60);
             $table->string('company', 200);
             $table->string('product_name', 200);
+            $table->string('area', 200);
             $table->string('unit_of_measure', 30);
             createNullable($table, 'manufacturer_part_number', 100);
             createNullable($table, 'purchase_description', 300);

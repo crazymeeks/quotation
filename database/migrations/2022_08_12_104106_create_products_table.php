@@ -19,6 +19,7 @@ return new class extends Migration
             createBigInteger($table, 'company_id', true);
             createUUIdField($table);
             $table->string('name', 200);
+            createNullable($table, 'area');
             createNullable($table, 'manufacturer_part_number');
             createNullable($table, 'purchase_description', 300);
             createNullable($table, 'sales_description', 300);
