@@ -105,7 +105,13 @@ class ProductRepository
         return $data;
     }
 
-
+    /**
+     * Map datatable column to database
+     *
+     * @param string $column
+     * 
+     * @return string
+     */
     protected function mapColumn(string $column)
     {
         $columns = [

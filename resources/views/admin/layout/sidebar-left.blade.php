@@ -31,6 +31,7 @@
                             <li>
                                 <a href="{{route('admin.customer.index')}}" class="waves-effect"><i class="dripicons-user"></i> <span> Customers </span> <span class="float-right"></span></a>
                             </li>
+                            
                             <li>
                                 <a href="{{route('admin.company.index')}}" class="waves-effect"><i class="fas fa-building"></i> <span> Companies </span> <span class="float-right"></span></a>
                             </li>
@@ -38,18 +39,25 @@
                             <li>
                                 <a href="{{route('admin.uom.index')}}" class="waves-effect"><i class="fas fa-ruler-horizontal"></i> <span> Unit of measures </span> <span class="float-right"></span></a>
                             </li>
+                            @if(get_auth_role() === \App\Models\Role::ADMIN_ROLE)
                             <li>
                                 <a href="{{route('product.index')}}" class="waves-effect"><i class="dripicons-stack"></i><span> Products</a>
                             </li>
+                            @endif
                             <li>
                                 <a href="{{route('admin.quotation.index')}}" class="waves-effect"><i class="fas fa-users-cog"></i> <span> Quotations </span></a>
                             </li>
                             <li>
                                 <a href="{{route('admin.orders.get.index')}}" class="waves-effect"><i class="far fa-money-bill-alt"></i><span> Orders </span></a>
                             </li>
+                            @if(get_auth_role() === \App\Models\Role::ADMIN_ROLE)
+                            <li>
+                                <a href="{{route('admin.users.index')}}" class="waves-effect"><i class="dripicons-user"></i> <span> Admin Users </span> <span class="float-right"></span></a>
+                            </li>
                             <li>
                                 <a href="{{route('admin.role.get.index')}}" class="waves-effect"><i class="fas fa-gavel"></i> <span> Roles </span></a>
                             </li>
+                            @endif
                             
                         </ul>
                     </div>

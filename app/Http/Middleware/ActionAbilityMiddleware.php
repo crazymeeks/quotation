@@ -24,7 +24,8 @@ class ActionAbilityMiddleware
         
         if (in_array($role, [Role::ADMIN_ROLE, Role::USERIN_ROLE])) {
             $request->merge([
-                'user' => $loggedInUser
+                'user' => $loggedInUser,
+                'current_role' => $role,
             ]);
             return $next($request);
         }

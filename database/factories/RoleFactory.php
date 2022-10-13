@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Role;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,7 +19,7 @@ class RoleFactory extends Factory
     {
         return [
             'uuid' => generateUuid(),
-            'title' => 'Admin',
+            'title' => Role::ADMIN_ROLE,
         ];
     }
 }

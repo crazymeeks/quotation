@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
@@ -12,7 +13,6 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\UnitOfMeasureController;
 use App\Http\Controllers\QuotationHistoryController;
-use App\Models\Customer;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,7 +38,7 @@ Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
         $route->get('/', [HomeController::class, 'getIndex'])->name('home');
     });
     /** Product */
-    $route->group(['prefix' => 'products'], function($route){
+    $route->group(['prefix' => 'products', 'middleware' => ['can.manage.products']], function($route){
         $route->get('/', [ProductController::class, 'index'])->name('product.index');
         $route->post('/', [ProductController::class, 'postSave'])->name('product.save');
         $route->get('/add-new', [ProductController::class, 'showAddNewPage'])->name('product.add.new');
@@ -81,7 +81,7 @@ Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
     });
 
     /** Role */
-    $route->group(['prefix' => 'roles'], function($route){
+    $route->group(['prefix' => 'roles', 'middleware' => ['can.manage.users']], function($route){
         $route->get('/', [RoleController::class, 'getIndex'])->name('admin.role.get.index');
         $route->post('/', [RoleController::class, 'postSave'])->name('admin.role.post.save');
         $route->get('/edit/{uuid}', [RoleController::class, 'editForm'])->name('admin.role.edit');
@@ -125,7 +125,16 @@ Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
             /** Compute discount on keyup in discount input */
             $route->post('/', [QuotationController::class, 'postComputeDiscount'])->name('admin.quotation.compute.discount');
         });
+        
+    });
 
+    $route->group(['prefix' => 'users', 'middleware' => ['can.manage.users']], function($route){
+        $route->get('/', [UserController::class, 'index'])->name('admin.users.index');
+        $route->post('/', [UserController::class, 'postSave'])->name('admin.users.post.save');
+        $route->get('/add-new', [UserController::class, 'displayAddNewForm'])->name('admin.users.get.add.new');
+        $route->get('/{uuid}/edit', [UserController::class, 'displayEditForm'])->name('admin.users.get.edit');
+        $route->get('/datatable', [UserController::class, 'getDataTable'])->name('admin.users.get.datatable');
+        $route->delete('/', [UserController::class, 'delete'])->name('admin.users.delete');
         
     });
 

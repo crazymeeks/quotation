@@ -68,5 +68,7 @@ class Kernel extends HttpKernel
         'jwtauth.access.token' => \App\Http\Middleware\Api\JwtAuthTokenMiddleware::class,
         'auth.cms' => \App\Http\Middleware\AuthMiddleware::class,
         'action.ability' => \App\Http\Middleware\ActionAbilityMiddleware::class,
+        'can.manage.products' => \App\Http\Middleware\CanManageProductMiddleware::class,
+        'can.manage.users' => \App\Http\Middleware\CanManageUserMiddleware::class,
     ];
 }

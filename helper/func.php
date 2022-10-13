@@ -164,3 +164,16 @@ if (!function_exists('get_discount_price')) {
         return $sellingPrice;
     }
 }
+
+
+if (!function_exists('get_auth_role')) {
+
+    /**
+     * Get current role of authenticated user
+     *
+     * @return string
+     */
+    function get_auth_role() {
+        return request()->current_role;
+    }
+}
