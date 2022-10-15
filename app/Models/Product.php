@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Company;
+use App\Models\UnitOfMeasure;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -19,7 +20,10 @@ class Product extends Model
         'company_id',
         'uuid',
         'name',
+        'code',
         'area',
+        'size',
+        'color',
         'manufacturer_part_number',
         'purchase_description',
         'sales_description',
@@ -49,5 +53,15 @@ class Product extends Model
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    /**
+     * Get unit of measure of this model
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function unit_of_measure()
+    {
+        return $this->belongsTo(UnitOfMeasure::class);
     }
 }

@@ -12,6 +12,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\UnitOfMeasureController;
+use App\Http\Controllers\PullOutRequestController;
 use App\Http\Controllers\QuotationHistoryController;
 
 /*
@@ -128,6 +129,7 @@ Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
         
     });
 
+    /** Users */
     $route->group(['prefix' => 'users', 'middleware' => ['can.manage.users']], function($route){
         $route->get('/', [UserController::class, 'index'])->name('admin.users.index');
         $route->post('/', [UserController::class, 'postSave'])->name('admin.users.post.save');
@@ -136,6 +138,14 @@ Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
         $route->get('/datatable', [UserController::class, 'getDataTable'])->name('admin.users.get.datatable');
         $route->delete('/', [UserController::class, 'delete'])->name('admin.users.delete');
         
+    });
+
+    /** Pull out request */
+    $route->group(['prefix' => 'pull-out'], function($route){
+        $route->get('/', [PullOutRequestController::class, 'index'])->name('admin.pullout.index');
+        $route->post('/', [PullOutRequestController::class, 'postPullOut'])->name('admin.pullout.post.save');
+        $route->get('/add-new', [PullOutRequestController::class, 'displayAddNewForm'])->name('admin.pullout.get.add.new');
+        $route->get('/datatable', [PullOutRequestController::class, 'getDataTable'])->name('admin.pullout.get.datatable');
     });
 
 });

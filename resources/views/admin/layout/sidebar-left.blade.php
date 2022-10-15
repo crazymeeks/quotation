@@ -43,6 +43,9 @@
                             <li>
                                 <a href="{{route('product.index')}}" class="waves-effect"><i class="dripicons-stack"></i><span> Products</a>
                             </li>
+                            <li>
+                                <a href="{{route('admin.pullout.index')}}" class="waves-effect"><i class="dripicons-stack"></i><span> Pull Out Requests</a>
+                            </li>
                             @endif
                             <li>
                                 <a href="{{route('admin.quotation.index')}}" class="waves-effect"><i class="fas fa-users-cog"></i> <span> Quotations </span></a>

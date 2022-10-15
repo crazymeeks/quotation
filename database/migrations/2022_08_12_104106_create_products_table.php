@@ -20,6 +20,9 @@ return new class extends Migration
             createUUIdField($table);
             $table->string('name', 200);
             createNullable($table, 'area');
+            createNullable($table, 'code');
+            createNullable($table, 'size', 120);
+            createNullable($table, 'color', 120);
             createNullable($table, 'manufacturer_part_number');
             createNullable($table, 'purchase_description', 300);
             createNullable($table, 'sales_description', 300);

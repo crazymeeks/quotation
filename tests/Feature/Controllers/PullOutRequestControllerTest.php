@@ -2,29 +2,48 @@
 
 namespace Tests\Feature\Controllers;
 
-
 use Tests\TestCase;
-
-use App\Models\Company;
 use App\Models\Product;
 use App\Models\UnitOfMeasure;
+use App\Models\PullOutRequest;
+use App\Models\PullOutRequestProduct;
 
-class ProductControllerTest extends TestCase
+
+class PullOutRequestControllerTest extends TestCase
 {
+
     public function setUp(): void
     {
         parent::setUp();
-        
-        Company::factory()->create();
         UnitOfMeasure::factory()->create();
+        
         $this->authenticateAsAdmin();
     }
 
-    /** @dataProvider dataTableRequest */
-    public function testShouldGetProductDatatable(array $dtRequest)
+
+    /** @dataProvider data */
+    public function testShouldPullOutProduct(array $data)
     {
-        Product::factory()->create();
-        $response = $this->json('GET', route('product.datatable'), $dtRequest);
+        $product = Product::factory()->create();
+        $response = $this->json('POST', route('admin.pullout.post.save'), $data);
+        $this->assertEquals('Product pull out request successfully saved.', $response->original['message']);
+
+        $this->assertDatabaseHas('pull_out_request_products', [
+            'product_uuid' => $product->uuid,
+            'unit' => $product->unit_of_measure->title,
+            'product_name' => $product->name,
+        ]);
+    }
+
+
+    /** @dataProvider dataTableRequest */
+    public function testShouldGetPullOutRequests(array $dataTableRequest)
+    {
+        PullOutRequest::factory()->create();
+        PullOutRequestProduct::factory()->create();
+
+        $response = $this->json('GET', route('admin.pullout.get.datatable'), $dataTableRequest);
+
         $response->assertJsonStructure([
             'draw',
             'recordsTotal',
@@ -32,77 +51,20 @@ class ProductControllerTest extends TestCase
             'data' => [
                 [
                     'id',
-                    'unit_of_measure_id',
-                    'company_id',
-                    'uuid',
-                    'name',
-                    'manufacturer_part_number',
-                    'purchase_description',
-                    'sales_description',
-                    'cost',
-                    'inventory',
-                    'percent_discount',
-                    'status',
-                    'deleted_at',
-                    'created_at',
-                    'updated_at',
-                    'measure',
-                    'company_name',
+                    'type',
+                    'por_no',
+                    'business_name',
+                    'address',
+                    'contact_person',
+                    'phone',
+                    'salesman',
+                    'requested_by',
+                    'approved_by',
+                    'returned_by',
+                    'counter_checked_by',
                 ]
-            ]
+            ],
         ]);
-    }
-
-
-
-    /**
-     * @dataProvider data
-     */
-    public function testShouldAddProduct(array $data)
-    {
-        $this->authenticateAsUserIn();
-        $response = $this->json('POST', route('product.save'), $data);
-        
-        $this->assertDatabaseHas('products', [
-            'name' => $data['name']
-        ]);
-        
-        $this->assertEquals('Product successfully created!', $response->original['message']);
-    }
-
-    /**
-     * @dataProvider data
-     */
-    public function testUpdateProduct(array $data)
-    {
-        $this->authenticateAsUserIn();
-        $this->json('POST', route('product.save'), $data);
-        $data['id'] = 1;
-        $data['name'] = 'table';
-        $response = $this->json('POST', route('product.save'), $data);
-
-        $this->assertDatabaseHas('products', [
-            'name' => 'table',
-            'area' => 'Area A'
-        ]);
-
-        $this->assertEquals('Product successfully updated!', $response->original['message']);
-    }
-
-    /**
-     * @dataProvider data
-     */
-    public function testShouldDeleteProduct(array $data)
-    {
-        $this->authenticateAsAdmin();
-        $this->json('POST', route('product.save'), $data);
-
-        $this->json('DELETE', route('product.delete'), ['id' => 1]);
-        
-        $product = Product::first();
-        
-        $this->assertNull($product);
-        
     }
 
     public function dataTableRequest()
@@ -110,8 +72,9 @@ class ProductControllerTest extends TestCase
         $dt = [
             'draw' => 1,
             'columns' => [
+                
                 [
-                    'data' => 'name',
+                    'data' => 'por_no',
                     'name' => NULL,
                     'searchable' => 'true',
                     'orderable' => 'true',
@@ -121,7 +84,7 @@ class ProductControllerTest extends TestCase
                     ]
                 ],
                 [
-                    'data' => 'cost',
+                    'data' => 'type',
                     'name' => NULL,
                     'searchable' => 'true',
                     'orderable' => 'true',
@@ -131,7 +94,7 @@ class ProductControllerTest extends TestCase
                     ]
                 ],
                 [
-                    'data' => 'inventory',
+                    'data' => 'business_name',
                     'name' => NULL,
                     'searchable' => 'true',
                     'orderable' => 'true',
@@ -141,7 +104,7 @@ class ProductControllerTest extends TestCase
                     ]
                 ],
                 [
-                    'data' => 'percent_discount',
+                    'data' => 'contact_person',
                     'name' => NULL,
                     'searchable' => 'true',
                     'orderable' => 'true',
@@ -151,7 +114,7 @@ class ProductControllerTest extends TestCase
                     ]
                 ],
                 [
-                    'data' => 'measure',
+                    'data' => 'requested_by',
                     'name' => NULL,
                     'searchable' => 'true',
                     'orderable' => 'true',
@@ -160,8 +123,31 @@ class ProductControllerTest extends TestCase
                         'regex' => 'false'
                     ]
                 ],
+
                 [
-                    'data' => 'company_name',
+                    'data' => 'approved_by',
+                    'name' => NULL,
+                    'searchable' => 'true',
+                    'orderable' => 'true',
+                    'search' => [
+                        'value' => NULL,
+                        'regex' => 'false'
+                    ]
+                ],
+
+                [
+                    'data' => 'returned_by',
+                    'name' => NULL,
+                    'searchable' => 'true',
+                    'orderable' => 'true',
+                    'search' => [
+                        'value' => NULL,
+                        'regex' => 'false'
+                    ]
+                ],
+
+                [
+                    'data' => 'counter_checked_by',
                     'name' => NULL,
                     'searchable' => 'true',
                     'orderable' => 'true',
@@ -171,16 +157,6 @@ class ProductControllerTest extends TestCase
                     ]
                 ],
                 
-                [
-                    'data' => 'status',
-                    'name' => NULL,
-                    'searchable' => 'true',
-                    'orderable' => 'true',
-                    'search' => [
-                        'value' => NULL,
-                        'regex' => 'false'
-                    ]
-                ],
 
             ],
             'order' => [
@@ -203,21 +179,27 @@ class ProductControllerTest extends TestCase
         ];
     }
 
+
     public function data()
     {
         $data = [
-            'unit_of_measure' => 1,
-            'company' => 1,
-            'name' => 'Product A',
-            'area' => 'Area A',
-            'code' => NULL,
-            'manufacturer_part_number' => NULL,
-            'purchase_description' => 'Purchase Description A',
-            'sales_description' => 'Sales Description A',
-            'cost' => 16000,
-            'inventory' => 100,
-            'percent_discount' => 0.00,
-            'status' => Product::ACTIVE,
+            'type' => PullOutRequest::DEMO_ITEMS,
+            'business_name' => 'Business A',
+            'address' => 'Address A',
+            'contact_person' => 'Contact A',
+            'phone' => '0390349930',
+            'salesman' => 'Salesman A',
+            'requested_by' => 'John Doe',
+            'approved_by' => 'John Doe',
+            'returned_by' => 'John Doe',
+            'counter_checked_by' => 'John Doe',
+            'items' => [
+                [
+                    'quantity' => 1,
+                    'product_id' => 1,
+                    'remarks' => 'Pull out only'
+                ]
+            ]
         ];
 
         return [
