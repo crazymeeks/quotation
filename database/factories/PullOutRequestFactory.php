@@ -18,6 +18,7 @@ class PullOutRequestFactory extends Factory
     public function definition()
     {
         return [
+            'uuid' => generateUuid(),
             'type' => PullOutRequest::DEMO_ITEMS,
             'por_no' => invoice_num(1),
             'business_name' => 'Business A',

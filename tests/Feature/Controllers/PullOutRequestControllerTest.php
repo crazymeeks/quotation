@@ -4,6 +4,7 @@ namespace Tests\Feature\Controllers;
 
 use Tests\TestCase;
 use App\Models\Product;
+use App\Models\PullOutItem;
 use App\Models\UnitOfMeasure;
 use App\Models\PullOutRequest;
 use App\Models\PullOutRequestProduct;
@@ -35,6 +36,25 @@ class PullOutRequestControllerTest extends TestCase
         ]);
     }
 
+    public function testShouldAddPullOutItems()
+    {
+        $product = Product::factory()->create();
+        $request = [
+            'product_id' => $product->id,
+            'quantity' => 10,
+        ];
+        $response = $this->json('POST', route('admin.pullout.post.add.item'), $request);
+        $this->assertTrue(str_contains($response->original['html'], 'Product A'));
+    }
+
+    public function testDeletePullOutItem()
+    {
+        Product::factory()->create();
+        $item = PullOutItem::factory()->create();
+
+        $response = $this->json('DELETE', route('admin.pullout.item.delete'), ['id' => $item->id]);
+        $this->assertArrayHasKey('html', $response->original);
+    }
 
     /** @dataProvider dataTableRequest */
     public function testShouldGetPullOutRequests(array $dataTableRequest)

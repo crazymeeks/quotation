@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Company;
+use App\Models\PullOutItem;
 use App\Models\UnitOfMeasure;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -43,6 +44,16 @@ class Product extends Model
     public function scopeActive($query)
     {
         return $query->where('status', self::ACTIVE);
+    }
+
+    /**
+     * Get pull out item of this model
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function pull_out_item()
+    {
+        return $this->hasOne(PullOutItem::class);
     }
 
     /**

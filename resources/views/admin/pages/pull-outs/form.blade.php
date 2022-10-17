@@ -19,6 +19,13 @@
                             <input type="hidden" id="id" value="{{$pullOut->id}}">
                             @endif
                             <div class="form-group row">
+                                <div class="col-md-8">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="">POR No. <strong>{{$por_code}}</strong></label>
+                                </div>
+                            </div>
+                            <div class="form-group row">
                                 <label for="type" class="col-sm-2 col-form-label">Pull-Out for <span class="text-danger">*</span></label>
                                 <div class="col-sm-10">
                                     <select name="type" class="form-control" id="type">
@@ -54,6 +61,12 @@
                                 </div>
                             </div>
                             <div class="form-group row">
+                                <label for="salesman" class="col-sm-2 col-form-label">Salesman</label>
+                                <div class="col-sm-10">
+                                    <input class="form-control" name="salesman" id="salesman" type="text" value="{{$pullOut->salesman}}" placeholder="Enter here...">
+                                </div>
+                            </div>
+                            <div class="form-group row">
                                 <label for="requested_by" class="col-sm-2 col-form-label">Requested by</label>
                                 <div class="col-sm-10">
                                     <input class="form-control" name="requested_by" id="requested_by" type="text" value="{{$pullOut->requested_by}}" placeholder="Enter here...">
@@ -80,7 +93,14 @@
 
                             <div class="card">
                                 <div class="card-body">
-                                    <a href="javascript:void(0);" style="color: #605daf;">Click to pull-out items.</a>
+                                    <a href="javascript:void(0);" data-toggle="modal" data-target=".pull-out-modal" style="color: #605daf;">Click to pull-out items.</a>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <span id="pull-out-list">
+                                                @include('admin.pages.pull-outs.pull-out-items')
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -93,6 +113,7 @@
         </div>
     </div> <!-- end col -->
 </div> <!-- end row -->
+@include('admin.pages.pull-outs.modal.product-select')
 @endsection
 
 @section('js')
@@ -100,58 +121,89 @@
 <script src="/assets/js/jquery-validation-1.19.5/dist/jquery.validate.min.js"></script>
 <script type="text/javascript">
     (function($){
+
+
+        $('#btn-pull-out').on('click', function(evt){
+            $.ajax({
+                url: "{{route('admin.pullout.post.add.item')}}",
+                method: "POST",
+                data: {
+                    product_id: $('#product').val(),
+                    quantity: $('#quantity').val(),
+                },
+                success: function(response){
+                    const {html} = response;
+                    $('#pull-out-list').html(html);
+                    $('.pull-out-modal').modal('hide');
+                }
+            }); 
+        });
+
+        $('body').on('click', '.delete-pullout-item', function(){
+
+            let id = $(this).data('id');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{route('admin.pullout.item.delete')}}",
+                        method: "DELETE",
+                        data: {
+                            id: id
+                        },
+                        success: function(response){
+                            const {html} = response;
+                            $('#pull-out-list').html(html);
+                        }
+                    });
+                }
+            });
+        });
+
+
         $('#myform').validate({
             rules: {
-                unit_of_measure: "required",
-                company: "required",
-                name: "required",
-                cost:{
-                    required: true,
-                    number: true
-                },
-                inventory:{
-                    required: true,
-                    number: true
-                },
-                percent_discount: {
-                    number: true
-                },
+                type: "required",
+                business_name: "required",
             },
             submitHandler: function(form){
                 let data = {
-                    unit_of_measure: $('#unit_of_measure').val(),
-                    company: $('#company').val(),
-                    name: $('#name').val(),
-                    area: $('#area').val() || null,
-                    code: $('#code').val() || null,
-                    size: $('#size').val() || null,
-                    color: $('#color').val() || null,
-                    manufacturer_part_number: $('#manufacturer_part_number').val(),
-                    sales_description: $('#sales_description').val(),
-                    cost: $('#cost').val(),
-                    inventory: $('#inventory').val(),
-                    percent_discount: $('#percent_discount').val(),
-                    status: 'inactive',
+                    type: $('#type').val(),
+                    business_name: $('#business_name').val(),
+                    address: $('#address').val(),
+                    contact_person: $('#contact_person').val() || null,
+                    phone: $('#phone').val() || null,
+                    salesman: $('#salesman').val() || null,
+                    requested_by: $('#requested_by').val() || null,
+                    approved_by: $('#approved_by').val(),
+                    returned_by: $('#returned_by').val(),
+                    counter_checked_by: $('#counter_checked_by').val(),
+                    
                 };
-
-                if ($('.status').is(':checked')) {
-                    data.status = 'active';
-                }
-
-                if ($('#id').length > 0) {
-                    data.id = $('#id').val();
-                }
                 
                 $.ajax({
-                    url: "{{route('product.save')}}",
+                    url: "{{route('admin.pullout.post.save')}}",
                     method: "POST",
                     data: data,
                     success: function(response){
                         const {message} = response;
                         toastr.success(message);
                         setTimeout(() => {
-                            window.location.href = "{{route('product.index')}}";
+                            window.location.href = "{{route('admin.pullout.index')}}";
                         }, 2000);
+                    },
+                    error: function(xhr, status, thrown){
+                        const {error} = xhr.responseJSON;
+                        if (xhr.status === 422) {
+                            toastr.error(error);
+                        }
                     }
                 });
             }

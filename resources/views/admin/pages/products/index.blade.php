@@ -1,12 +1,6 @@
 @extends('admin.layout.main')
 @section('css')
-<!-- DataTables -->
-<link href="/assets/plugins/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-<link href="/assets/plugins/datatables/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-<!-- Responsive datatable examples -->
-<link href="/assets/plugins/datatables/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-
-
+@include('admin.layout.datatable-css')
 @endsection
 @section('content')
 <div class="row">
@@ -47,22 +41,7 @@
 @endsection
 
 @section('js')
-<!-- Required datatable js -->
-<script src="/assets/plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="/assets/plugins/datatables/dataTables.bootstrap4.min.js"></script>
-<!-- Buttons examples -->
-<script src="/assets/plugins/datatables/dataTables.buttons.min.js"></script>
-<script src="/assets/plugins/datatables/buttons.bootstrap4.min.js"></script>
-<script src="/assets/plugins/datatables/jszip.min.js"></script>
-<script src="/assets/plugins/datatables/pdfmake.min.js"></script>
-<script src="/assets/plugins/datatables/vfs_fonts.js"></script>
-<script src="/assets/plugins/datatables/buttons.html5.min.js"></script>
-<script src="/assets/plugins/datatables/buttons.print.min.js"></script>
-<script src="/assets/plugins/datatables/buttons.colVis.min.js"></script>
-<!-- Responsive examples -->
-<script src="/assets/plugins/datatables/dataTables.responsive.min.js"></script>
-<script src="/assets/plugins/datatables/responsive.bootstrap4.min.js"></script>
-
+@include('admin.layout.datatable-js')
 <script>
     (function($){
         $('#product-datatable').DataTable({
@@ -86,7 +65,14 @@
                 {data: 'id'},
             ],
             columnDefs: [
-    
+                {
+                    targets: [1],
+                    searchable: true,
+                    orderable: true,
+                    render: function(data, type, row, meta){
+                        return `Php${row.cost}`;
+                    }
+                },
                 {
                     targets: [7],
                     searchable: false,

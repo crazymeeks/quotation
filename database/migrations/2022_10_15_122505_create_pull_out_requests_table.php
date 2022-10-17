@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('pull_out_requests', function (Blueprint $table) {
             $table->id();
+            createUUIdField($table);
             $table->string('type', 60);
             $table->string('por_no', 60);
             $table->string('business_name', 200)->default(NULL)->nullable();

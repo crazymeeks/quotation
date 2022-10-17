@@ -19,6 +19,7 @@
                         <thead>
                         <tr>
                             <th>POR No</th>
+                            <th>Type</th>
                             <th>Business Name</th>
                             <th>Salesman</th>
                             <th>Requested By</th>
@@ -56,6 +57,7 @@
     
             columns: [
                 {data: 'por_no'},
+                {data: 'type'},
                 {data: 'business_name'},
                 {data: 'salesman'},
                 {data: 'requested_by'},
@@ -67,11 +69,11 @@
             columnDefs: [
     
                 {
-                    targets: [7],
+                    targets: [8],
                     searchable: false,
                     orderable: false,
                     render: function(data, type, row, meta){
-                        let a = `<a class="badge badge-pill badge-outline-primary badge-medium" href="/products/edit/${row.uuid}">View</a>&nbsp;&nbsp;`;
+                        let a = `<a class="badge badge-pill badge-outline-primary badge-medium" href="/pull-out/${row.uuid}/view">View</a>&nbsp;&nbsp;`;
                         return a;
                     }
                 },

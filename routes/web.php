@@ -145,7 +145,12 @@ Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
         $route->get('/', [PullOutRequestController::class, 'index'])->name('admin.pullout.index');
         $route->post('/', [PullOutRequestController::class, 'postPullOut'])->name('admin.pullout.post.save');
         $route->get('/add-new', [PullOutRequestController::class, 'displayAddNewForm'])->name('admin.pullout.get.add.new');
+        $route->get('/{uuid}/view', [PullOutRequestController::class, 'view'])->name('admin.pullout.get.view');
         $route->get('/datatable', [PullOutRequestController::class, 'getDataTable'])->name('admin.pullout.get.datatable');
+
+        /** Add pull out items */
+        $route->post('/add-item', [PullOutRequestController::class, 'postAddItem'])->name('admin.pullout.post.add.item');
+        $route->delete('/', [PullOutRequestController::class, 'delete'])->name('admin.pullout.item.delete');
     });
 
 });

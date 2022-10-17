@@ -18,6 +18,7 @@ class PullOutRequest extends Model
     protected $table = 'pull_out_requests';
 
     protected $fillable = [
+        'uuid',
         'type',
         'por_no',
         'business_name',
