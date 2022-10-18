@@ -26,7 +26,9 @@ class PullOutRequestControllerTest extends TestCase
     public function testShouldPullOutProduct(array $data)
     {
         $product = Product::factory()->create();
+        PullOutItem::factory()->create();
         $response = $this->json('POST', route('admin.pullout.post.save'), $data);
+        
         $this->assertEquals('Product pull out request successfully saved.', $response->original['message']);
 
         $this->assertDatabaseHas('pull_out_request_products', [

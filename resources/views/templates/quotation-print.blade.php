@@ -226,6 +226,9 @@
         </style>
     </head>
     <body>
+        <?php
+        $grandTotal = 0;
+        ?>
         <div id="header">
             <h3>AURORA PHILS. INC</h3>
             <p>Office Furniture Business</p>
@@ -238,21 +241,21 @@
                     <div class="col col-md-6">
                         <div class="group">
                             <label for="">Customer:</label>
-                            <label for="">Test</label>
+                            <label for="">{{$quotation->customer->customer_name}}</label>
                         </div>
                         <div class="group">
                             <label for="">Quotation No:</label>
-                            <label for="">123345</label>
+                            <label for="">{{$quotation->code}}</label>
                         </div>
                     </div>
                     <div class="col col-md-6">
                         <div class="group">
                             <label for="">Date:</label>
-                            <label for="">2022/10/04</label>
+                            <label for=""></label>
                         </div>
                         <div class="group">
                             <label for="">Due Date:</label>
-                            <label for="">2022/10/04</label>
+                            <label for=""></label>
                         </div>
                     </div>
                 </div>
@@ -278,14 +281,21 @@
                                 <th>Amount</th>
                             </thead>
                             <tbody>
+                                
+                                @foreach($products as $product)
+                                <?php
+                                $amount = $product->quantity * $product->price;
+                                $grandTotal += $amount;
+                                ?>
                                 <tr>
-                                    <td>123456</td>
-                                    <td>Full metal alchemist</td>
-                                    <td>5</td>
+                                    <td>{{$product->code}}</td>
+                                    <td>{{$product->sales_description}}</td>
+                                    <td>{{$product->quantity}}</td>
                                     <td>-</td>
-                                    <td>PHP5,000.00</td>
-                                    <td>PHP25,000.00</td>
+                                    <td>Php{{number_format($product->price, 2)}}</td>
+                                    <td>Php{{number_format($amount, 2)}}</td>
                                 </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>                    
@@ -293,8 +303,12 @@
                 <div class="row">
                     <div class="col col-md-9">&nbsp;</div>
                     <div class="col col-md-3">
-                        <div>Net Total: Php100</div>
-                        <div>Grand Net Total: Php100</div>
+                        <div>Net Total: Php{{number_format($grandTotal, 2)}}</div>
+                        <div>Discount: {{$quotation->percent_discount}}%</div>
+                        <?php
+                        $grandNet = get_discount_price($grandTotal, $quotation->percent_discount);
+                        ?>
+                        <div>Grand Net Total: Php{{number_format($grandNet, 2)}}</div>
                     </div>
                 </div>
             </div>

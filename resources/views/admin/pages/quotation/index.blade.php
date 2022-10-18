@@ -78,6 +78,7 @@
                         if (row.status == 'pending') {
                             a += `<a class="badge badge-pill badge-outline-danger badge-medium delete-quotation-history" data-code="${row.code}" href="javascript:void(0);">Delete</a>&nbsp;&nbsp;`;
                         }
+                        a += `<a class="badge badge-pill badge-outline-info badge-medium target="_blank" view-quotation-history" href="/quotations/${row.uuid}/print">Print</a>&nbsp;&nbsp;`;
                         a += `<a class="badge badge-pill badge-outline-info badge-medium view-quotation-history" data-code="${row.code}" href="javascript:void(0);">Quotation History</a>`;
 
                         return a;

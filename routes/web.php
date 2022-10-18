@@ -103,6 +103,7 @@ Route::group(['middleware' => ['auth.cms', 'action.ability']], function($route){
         $route->post('/', [QuotationController::class, 'postSave'])->name('admin.quotation.post.save');
         $route->get('/new', [QuotationController::class, 'displayQuotationForm'])->name('admin.quotation.get.new');
         $route->get('/{uuid}/edit', [QuotationController::class, 'editQuotation'])->name('admin.quotation.get.edit');
+        $route->get('/{uuid}/print', [QuotationController::class, 'printQuotation'])->name('admin.quotation.get.print');
         $route->get('/datatable', [QuotationController::class, 'getDataTable'])->name('admin.quotation.get.datatable');
         $route->delete('/', [QuotationController::class, 'delete'])->name('admin.quotation.delete');
 

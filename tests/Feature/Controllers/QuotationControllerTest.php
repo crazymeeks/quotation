@@ -286,16 +286,18 @@ class QuotationControllerTest extends TestCase
     {
         Customer::factory()->create();
         QuoteCode::factory()->create();
-        Product::factory()->create();
+        $product = Product::factory()->create();
         
         $quotation = Quotation::factory()->create();
-        QuotationProduct::factory()->create();
+        QuotationProduct::factory()->create([
+            'product_uuid' => $product->uuid,
+        ]);
 
         $data = [
             'id' => $quotation->id,
         ];
 
-        $response = $this->json('POST', route('admin.quotation.post.convert.to.order'), $data);
+        $this->json('POST', route('admin.quotation.post.convert.to.order'), $data);
         
         $this->assertDatabaseHas('order_products', [
             'final_price' => 100

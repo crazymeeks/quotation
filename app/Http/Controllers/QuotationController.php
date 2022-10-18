@@ -27,6 +27,11 @@ class QuotationController extends Controller
     /** @var array */
     protected $items = [];
     
+    /**
+     * Display index page
+     * 
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         return view('admin.pages.quotation.index');
@@ -45,6 +50,26 @@ class QuotationController extends Controller
         $data = $quotationRepository->getDatatableData($request);
         
         return $data;
+    }
+
+    /**
+     * Display page for printing quotation
+     *
+     * @param string $uuid
+     * 
+     * @return \Illuminate\View\View
+     */
+    public function printQuotation(string $uuid)
+    {
+
+        $quotation = Quotation::with(['customer'])->whereUuid($uuid)->first();
+        
+        $productQuotations = $this->getRestructuredProductQuotation($quotation, false);
+        
+        return view('templates.quotation-print', [
+            'quotation' => $quotation,
+            'products' => $productQuotations,
+        ]);
     }
 
     /**
@@ -144,12 +169,16 @@ class QuotationController extends Controller
      * Get product quotations
      *
      * @param \App\Models\Quotation $quotation
+     * @param bool $restructure
      * 
-     * @return array
+     * @return mixed
      */
-    protected function getRestructuredProductQuotation(Quotation $quotation)
+    protected function getRestructuredProductQuotation(Quotation $quotation, bool $restructure = true)
     {
         $quoteProducts = QuotationProduct::where('quotation_id', $quotation->id)->get();
+        if (!$restructure) {
+            return $quoteProducts;
+        }
 
         $data = [];
         foreach($quoteProducts as $quoteProduct){
@@ -283,6 +312,9 @@ class QuotationController extends Controller
                 'company' => $product->company_name,
                 'product_name' => $product->name,
                 'area' => $product->area,
+                'code' => $product->code,
+                'size' => $product->size,
+                'color' => $product->color,
                 'manufacturer_part_number' => $product->manufacturer_part_number,
                 'purchase_description' => $product->purchase_description,
                 'sales_description' => $product->sales_description,
@@ -344,6 +376,7 @@ class QuotationController extends Controller
                      ->leftJoin('companies', 'products.company_id', '=', 'companies.id')
                      ->where('products.id', $item->product_id)
                      ->first();
+        
         return $product;
     }
 
@@ -622,6 +655,7 @@ class QuotationController extends Controller
                     $quotation->save();
                     $quotationProducts = QuotationProduct::where('quotation_id', $quotation->id)->get();
                     $items = collect($quotationProducts)->toArray();
+                    
                     $this->createOrder($quotation, $items);
                 });
             } else {
@@ -629,6 +663,7 @@ class QuotationController extends Controller
                 $request->merge([
                     'status' => Quotation::CONVERTED
                 ]);
+
                 DB::transaction(function() use ($request) {
                     
                     $quotation = $this->saveQuotation($request);
@@ -701,6 +736,7 @@ class QuotationController extends Controller
         foreach($items as $item){
             /** @todo optimize this */
             $product = Product::whereUuid($item['product_uuid'])->first();
+            
             $product->inventory = ((int) $product->inventory - (int)$item['quantity']);
             $product->save();
         }

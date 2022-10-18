@@ -20,16 +20,25 @@ trait CreatesApplication
 
         $app->make(Kernel::class)->bootstrap();
         
-        $this->migrate();
+        $this->useSqlite($app);
         $this->app = $app;
         return $app;
     }
 
 
-    private function migrate()
+    /**
+     * Set database to sqlite during unit test
+     *
+     * @param \Illuminate\Foundation\Application $app
+     * 
+     * @return void
+     */
+    private function useSqlite($app)
     {
-        Artisan::call('migrate:refresh');
-        Artisan::call('migrate');
+        
+        $app['config']->set('database.default', 'sqlite_testing');
+        // Artisan::call('migrate:refresh');
+        Artisan::call('migrate', ['--path' => 'database/testing']);
         Hash::setRounds(4);
     }
 
